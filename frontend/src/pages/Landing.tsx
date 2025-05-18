@@ -166,31 +166,218 @@ const Landing = () => {
       {/* Hero Section - with animated entrance */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-sky-50 to-white py-24">
         {/* Abstract background pattern */}
-        <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute top-10 left-10 h-64 w-64 rounded-full bg-blue-300 blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 h-64 w-64 rounded-full bg-cyan-300 blur-3xl"></div>
+        <motion.div 
+          className="absolute inset-0 z-0 opacity-30"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.3 }}
+          transition={{ duration: 1.5 }}
+        >
+          <motion.div 
+            className="absolute top-10 left-10 h-64 w-64 rounded-full bg-blue-300 blur-3xl"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              x: [0, 20, 0],
+              y: [0, 15, 0],
+            }}
+            transition={{ 
+              duration: 8,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          <motion.div 
+            className="absolute bottom-10 right-10 h-64 w-64 rounded-full bg-cyan-300 blur-3xl"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              x: [0, -20, 0],
+              y: [0, -15, 0],
+            }}
+            transition={{ 
+              duration: 10,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          <motion.div 
+            className="absolute top-1/2 left-1/3 h-48 w-48 rounded-full bg-indigo-200 blur-3xl"
+            animate={{ 
+              scale: [1, 1.5, 1],
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{ 
+              duration: 12,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+        </motion.div>
+        
+        {/* Data Piping Animation */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Horizontal data pipelines */}
+          <motion.div className="absolute top-1/4 left-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-400 opacity-60"
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 5, repeat: Infinity, repeatType: "loop" }}
+          />
+          <motion.div className="absolute top-2/3 right-0 h-1 bg-gradient-to-l from-blue-500 to-cyan-400 opacity-40"
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 8, repeat: Infinity, repeatType: "loop", delay: 2 }}
+          />
+          
+          {/* Data packets moving across the pipelines */}
+          <motion.div 
+            className="absolute top-1/4 left-0 h-2 w-6 bg-blue-600 rounded-full shadow-lg shadow-blue-400/50"
+            initial={{ x: '-100%' }}
+            animate={{ x: '100vw' }}
+            transition={{ duration: 5, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+          />
+          <motion.div 
+            className="absolute top-1/4 left-0 h-2 w-4 bg-cyan-500 rounded-full shadow-lg shadow-cyan-400/50"
+            initial={{ x: '-100%' }}
+            animate={{ x: '100vw' }}
+            transition={{ duration: 5, repeat: Infinity, repeatType: "loop", ease: "linear", delay: 1 }}
+          />
+          <motion.div 
+            className="absolute top-1/4 left-0 h-2 w-8 bg-indigo-500 rounded-full shadow-lg shadow-indigo-400/50"
+            initial={{ x: '-100%' }}
+            animate={{ x: '100vw' }}
+            transition={{ duration: 5, repeat: Infinity, repeatType: "loop", ease: "linear", delay: 2.5 }}
+          />
+          
+          <motion.div 
+            className="absolute top-2/3 right-0 h-2 w-7 bg-blue-600 rounded-full shadow-lg shadow-blue-400/50"
+            initial={{ x: '100vw' }}
+            animate={{ x: '-10%' }}
+            transition={{ duration: 8, repeat: Infinity, repeatType: "loop", ease: "linear", delay: 2 }}
+          />
+          <motion.div 
+            className="absolute top-2/3 right-0 h-2 w-3 bg-cyan-500 rounded-full shadow-lg shadow-cyan-400/50"
+            initial={{ x: '100vw' }}
+            animate={{ x: '-10%' }}
+            transition={{ duration: 8, repeat: Infinity, repeatType: "loop", ease: "linear", delay: 3.5 }}
+          />
+          
+          {/* Vertical data connections */}
+          <div className="absolute left-1/4 top-1/4 h-[calc(100%-40%)] w-1 overflow-hidden">
+            <motion.div 
+              className="w-full h-1/2 bg-gradient-to-b from-blue-500 to-transparent"
+              initial={{ y: '-100%' }}
+              animate={{ y: '100%' }}
+              transition={{ duration: 3, repeat: Infinity, repeatType: "loop", delay: 1, ease: "easeIn" }}
+            />
+          </div>
+          
+          <div className="absolute right-1/3 top-0 h-1/4 w-1 overflow-hidden">
+            <motion.div 
+              className="w-full h-4 bg-cyan-500 rounded-full"
+              initial={{ y: '-100%' }}
+              animate={{ y: '400%' }}
+              transition={{ duration: 2, repeat: Infinity, repeatType: "loop", delay: 0.5, ease: "easeIn" }}
+            />
+          </div>
+          
+          {/* Binary data visualization (1s and 0s) */}
+          <motion.div
+            className="absolute top-20 right-1/4 text-xs text-blue-500/30 font-mono"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatType: "loop", delay: 1 }}
+          >
+            10110101
+          </motion.div>
+          <motion.div
+            className="absolute bottom-40 left-1/3 text-xs text-cyan-500/30 font-mono"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatType: "loop", delay: 1.5 }}
+          >
+            01001101
+          </motion.div>
+          <motion.div
+            className="absolute top-1/2 right-1/5 text-xs text-indigo-500/30 font-mono"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatType: "loop", delay: 2 }}
+          >
+            11100011
+          </motion.div>
         </div>
         
         <div className="container relative z-10 mx-auto px-4 text-center">
-          <div className={cn(
-            "transform transition-all duration-700",
-            visible[0] ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-          )}>
-            <h1 className="mb-6 text-4xl font-extrabold md:text-6xl">
+          <motion.div 
+            className="transform"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <motion.h1 
+              className="mb-6 text-4xl font-extrabold md:text-6xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
                 Somalia National Bureau of Statistics
               </span>
-            </h1>
-            <p className="mx-auto mb-8 max-w-3xl text-lg text-gray-600 leading-relaxed">
+            </motion.h1>
+            <motion.p 
+              className="mx-auto mb-8 max-w-3xl text-lg text-gray-600 leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
               Explore official statistical data and indicators for Somalia through our interactive dashboard. 
               Access demographic, economic, and social development metrics to gain insights into Somalia's progress.
-            </p>
-            <Link to="/dashboard">
-              <Button size="lg" className="px-8 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 shadow-md hover:shadow-lg">
-                Explore Dashboard <ArrowRight className="ml-2 h-4 w-4 animate-pulse" />
-              </Button>
-            </Link>
-          </div>
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Link to="/dashboard">
+                <Button size="lg" className="px-8 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 shadow-md hover:shadow-lg">
+                  <span>Explore Dashboard</span>
+                  <motion.div
+                    className="inline-block ml-2"
+                    animate={{ 
+                      x: [0, 5, 0],
+                    }}
+                    transition={{ 
+                      duration: 1.5,
+                      repeat: Infinity,
+                      repeatType: "reverse"
+                    }}
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </motion.div>
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
+          
+          {/* Floating data points */}
+          <motion.div
+            className="absolute -right-16 top-1/4 h-24 w-24 rounded-xl bg-white/90 p-4 shadow-lg flex flex-col items-center justify-center backdrop-blur-sm border border-blue-100"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 1.2 }}
+          >
+            <span className="text-2xl font-bold text-blue-600">16.3M</span>
+            <span className="text-xs text-gray-500">Population</span>
+          </motion.div>
+          <motion.div
+            className="absolute -left-10 top-2/3 h-20 w-28 rounded-xl bg-white/90 p-3 shadow-lg flex flex-col items-center justify-center backdrop-blur-sm border border-green-100 hidden md:flex"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 1.4 }}
+          >
+            <span className="text-xl font-bold text-green-600">+4.2%</span>
+            <span className="text-xs text-gray-500">GDP Growth</span>
+          </motion.div>
         </div>
       </section>
 
