@@ -20,26 +20,43 @@ SERVICE_NAME = 'scraper_service'
 # Override the base Django apps with service-specific apps
 INSTALLED_APPS += [
     'scraper_service.scraper',
+    'django_crontab',  # Add the crontab app
 ]
 
 ROOT_URLCONF = 'scraper_service.urls'
 WSGI_APPLICATION = 'scraper_service.wsgi.application'
 
-# Scraper-specific settings
+# Crontab settings (schedule tasks)
+CRONJOBS = [
+    # Run the Somalia scraper every 20 minutes
+    ('*/20 * * * *', 'django.core.management.call_command', ['run_somalia_scraper_test']),
+]
+
+# Scraper settings
 SCRAPER_CONFIG = {
-    'base_url': os.environ.get('SNBS_BASE_URL', 'https://nbs.gov.so/'),
-    'user_agent': 'SNBS Dashboard/1.0 (Data Collection Bot)',
-    'request_timeout': 30,  # seconds
-    'request_delay': 2,  # seconds between requests
-    'max_retries': 3,  # maximum number of retries for failed requests
+    'base_url': 'https://nbs.gov.so/',
+    'user_agent': 'SNBS Dashboard Scraper/1.0',
+    'request_timeout': 30,
+    'request_delay': 1.0,
+    'max_retries': 3,
     
     # Paths to scrape
-    'statistics_path': 'Statistics/',
-    'publications_path': 'Publications/',
+    'statistics_path': '/statistics',
+    'publications_path': '/publications',
     
-    # PDF processing settings
-    'pdf_max_pages': 50,  # maximum number of pages to process per PDF
-    'pdf_tables_per_page': 5,  # maximum number of tables to extract per page
+    # PDF settings
+    'pdf_max_pages': 50,
+    'pdf_tables_per_page': 3,
+    
+    # Schedule intervals (in hours or minutes, e.g. '24h', '30m')
+    'schedule_interval': {
+        'somalia_stats': '20m',  # Every 20 minutes for real-time updates
+        'publications': '6h',    # Every 6 hours for publications
+    },
+    
+    # Real-time scraping settings
+    'real_time_categories': ['demographics', 'economy', 'inflation'],  # Categories to prioritize for real-time updates
+    'enable_websocket_updates': True,  # Enable WebSocket notifications for new data
 }
 
 # RabbitMQ settings for message publishing
@@ -56,6 +73,19 @@ RABBITMQ = {
 
 # Schedule settings for different scraper types
 SCRAPER_SCHEDULE = {
-    'statistics': int(os.environ.get('SCRAPER_SCHEDULE_INTERVAL', '1440')),  # minutes (default: daily)
+    'statistics': int(os.environ.get('SCRAPER_SCHEDULE_INTERVAL', '20')),  # minutes (default: 20 minutes)
     'publications': int(os.environ.get('SCRAPER_SCHEDULE_INTERVAL', '1440')) * 7,  # minutes (default: weekly)
 }
+
+# Add schedule package for scheduled jobs
+try:
+    import schedule
+except ImportError:
+    raise ImportError("Required package 'schedule' is not installed. Run 'pip install schedule'.")
+
+# Try to import pandas and bs4 for scraping
+try:
+    import pandas as pd
+    import bs4
+except ImportError:
+    raise ImportError("Required packages for scraping are not installed. Run 'pip install pandas beautifulsoup4 lxml html5lib tabula-py'.")

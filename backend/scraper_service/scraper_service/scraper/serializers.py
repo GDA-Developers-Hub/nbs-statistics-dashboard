@@ -3,49 +3,59 @@ from .models import ScraperJob, ScrapedItem
 
 class ScraperJobSerializer(serializers.ModelSerializer):
     """
-    Serializer for the ScraperJob model.
+    Serializer for ScraperJob model
     """
-    success_rate = serializers.FloatField(read_only=True)
-    duration = serializers.FloatField(read_only=True)
+    duration = serializers.SerializerMethodField()
+    success_rate = serializers.SerializerMethodField()
     
     class Meta:
         model = ScraperJob
         fields = [
-            'id', 'job_type', 'url', 'status', 
-            'start_time', 'end_time', 'items_found',
-            'items_processed', 'items_failed', 
-            'success_rate', 'duration',
-            'error_message', 'created_at', 'updated_at'
+            'id', 'job_type', 'url', 'status', 'start_time', 'end_time',
+            'items_found', 'items_processed', 'items_failed', 'error_message',
+            'created_at', 'updated_at', 'duration', 'success_rate'
         ]
-        read_only_fields = fields
-
+    
+    def get_duration(self, obj):
+        return obj.duration
+    
+    def get_success_rate(self, obj):
+        return obj.success_rate
 
 class ScrapedItemSerializer(serializers.ModelSerializer):
     """
-    Serializer for the ScrapedItem model.
+    Serializer for ScrapedItem model
     """
-    job_details = serializers.SerializerMethodField()
+    job_type = serializers.ReadOnlyField(source='job.job_type')
+    job_status = serializers.ReadOnlyField(source='job.status')
+    category = serializers.SerializerMethodField()
+    time_period = serializers.SerializerMethodField()
+    columns = serializers.SerializerMethodField()
     
     class Meta:
         model = ScrapedItem
         fields = [
-            'id', 'job', 'job_details', 'item_type', 
-            'source_url', 'page_number', 'table_number',
-            'title', 'description', 'content', 'metadata',
-            'status', 'error_message', 'message_id', 'queue_name',
-            'created_at', 'updated_at'
+            'id', 'job', 'job_type', 'job_status', 'item_type', 'source_url',
+            'title', 'description', 'status', 'error_message',
+            'created_at', 'updated_at', 'category', 'time_period', 'columns'
         ]
-        read_only_fields = fields
     
-    def get_job_details(self, obj):
-        """
-        Return minimal details about the related job.
-        """
-        return {
-            'id': obj.job.id,
-            'job_type': obj.job.job_type,
-            'status': obj.job.status
-        }
+    def get_category(self, obj):
+        return obj.metadata.get('category', '') if obj.metadata else ''
+    
+    def get_time_period(self, obj):
+        return obj.metadata.get('time_period', '') if obj.metadata else ''
+    
+    def get_columns(self, obj):
+        return obj.metadata.get('columns', []) if obj.metadata else []
+
+class ScrapedItemDetailSerializer(ScrapedItemSerializer):
+    """
+    Detailed serializer for ScrapedItem including content
+    """
+    
+    class Meta(ScrapedItemSerializer.Meta):
+        fields = ScrapedItemSerializer.Meta.fields + ['content', 'metadata']
 
 class ScrapedItemLightSerializer(serializers.ModelSerializer):
     """

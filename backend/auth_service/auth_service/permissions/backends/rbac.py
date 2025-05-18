@@ -124,6 +124,13 @@ class RoleBasedPermissionBackend(ModelBackend):
         """
         Check if user has any permissions for the app.
         """
+        # Anonymous users can access the login page
+        if not user_obj.is_authenticated:
+            # Allow access to admin login page
+            if app_label == 'admin':
+                return True
+            return False
+            
         # Superusers have all permissions
         if user_obj.is_superuser:
             return True
