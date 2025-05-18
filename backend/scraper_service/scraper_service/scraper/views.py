@@ -9,6 +9,8 @@ import threading
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 from django.core.cache import cache
 import json
@@ -53,10 +55,22 @@ class ScraperJobViewSet(viewsets.ReadOnlyModelViewSet):
             
         try:
             # Run the scraper in the background
-            call_command('run_somalia_scraper_test', *args)
-            return Response({'status': 'success', 'message': 'Scraper job started'})
+            thread = threading.Thread(
+                target=lambda: call_command('run_somalia_scraper_test', *args)
+            )
+            thread.daemon = True
+            thread.start()
+            return Response({
+                'status': 'success', 
+                'message': 'Scraper job started in background',
+                'categories': categories if categories else 'all'
+            })
         except Exception as e:
-            return Response({'status': 'error', 'message': str(e)}, status=500)
+            logger.exception(f"Error starting scraper: {str(e)}")
+            return Response({
+                'status': 'error', 
+                'message': str(e)
+            }, status=500)
 
 
 class ScrapedItemViewSet(viewsets.ReadOnlyModelViewSet):
@@ -73,7 +87,7 @@ class ScrapedItemViewSet(viewsets.ReadOnlyModelViewSet):
         """
         Allow unauthenticated access to public endpoints.
         """
-        if self.action in ['list', 'retrieve', 'data', 'categories']:
+        if self.action in ['list', 'retrieve', 'data', 'categories', 'category_data']:
             return [AllowAny()]
         return [IsAuthenticated()]
     
@@ -128,10 +142,12 @@ class ScrapedItemViewSet(viewsets.ReadOnlyModelViewSet):
                 'category': category,
                 'time_period': time_period,
                 'columns': columns,
-                'data': data
+                'data': data,
+                'last_updated': item.updated_at.isoformat() if item.updated_at else None
             })
             
         except Exception as e:
+            logger.exception(f"Error parsing data: {str(e)}")
             return Response({
                 'status': 'error',
                 'message': f'Error parsing data: {str(e)}',
@@ -146,9 +162,70 @@ class ScrapedItemViewSet(viewsets.ReadOnlyModelViewSet):
         categories = ScrapedItem.objects.values_list('metadata__category', flat=True).distinct()
         categories = [c for c in categories if c]
         return Response(sorted(categories))
+        
+    @action(detail=False, methods=['get'], url_path='category/(?P<category>[^/.]+)')
+    def category_data(self, request, category=None):
+        """
+        Get all data for a specific category
+        """
+        try:
+            # Get the latest job
+            latest_job = ScraperJob.objects.filter(
+                status=ScraperJob.STATUS_COMPLETED
+            ).order_by('-end_time').first()
+            
+            if not latest_job:
+                return Response({
+                    'status': 'error',
+                    'message': 'No completed scraper jobs found'
+                }, status=404)
+            
+            # Get items for this category
+            items = ScrapedItem.objects.filter(
+                job=latest_job,
+                metadata__category=category
+            )
+            
+            if not items.exists():
+                return Response({
+                    'status': 'error',
+                    'message': f'No data found for category: {category}'
+                }, status=404)
+            
+            # Format the response
+            result = {
+                'category': category,
+                'count': items.count(),
+                'job_id': latest_job.id,
+                'job_completed_at': latest_job.end_time.isoformat() if latest_job.end_time else None,
+                'items': []
+            }
+            
+            # Add each item
+            for item in items:
+                result['items'].append({
+                    'id': item.id,
+                    'title': item.title,
+                    'time_period': item.metadata.get('time_period', '') if item.metadata else '',
+                    'source_url': item.source_url,
+                    'item_type': item.item_type,
+                    'created_at': item.created_at.isoformat(),
+                    'url': f'/api/scraped-items/{item.id}/data/'
+                })
+            
+            return Response(result)
+                
+        except Exception as e:
+            logger.exception(f"Error getting category data: {str(e)}")
+            return Response({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
 
 
+@csrf_exempt
 @require_http_methods(["GET"])
+@cache_page(120)  # Cache for 2 minutes
 def latest_statistics(request):
     """
     Get the latest statistics for the dashboard
@@ -165,9 +242,15 @@ def latest_statistics(request):
         # Cache for 5 minutes
         cache.set('latest_somalia_data', result, 300)
         
-        return JsonResponse(result)
+        # Set CORS headers
+        response = JsonResponse(result)
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        return response
         
     except Exception as e:
+        logger.exception(f"Error getting latest statistics: {str(e)}")
         return JsonResponse({
             'status': 'error',
             'message': str(e)
@@ -213,26 +296,44 @@ def realtime_data(request, category=None):
     This endpoint:
     1. Returns the latest cached data
     2. Optionally triggers a background scrape if data is stale
+    
+    Query parameters:
+    - auto_update: Whether to trigger a background scrape if data is stale (default: false)
+    - refresh: Whether to force refresh the data (default: false)
     """
     try:
-        # Try to get from cache first
+        # Get query parameters
+        auto_update = request.query_params.get('auto_update', 'false').lower() == 'true'
+        refresh = request.query_params.get('refresh', 'false').lower() == 'true'
+        
+        # Define cache key
         cache_key = f'realtime_data_{category}' if category else 'latest_somalia_data'
-        cached_data = cache.get(cache_key)
+        
+        # If refresh requested, clear cache
+        if refresh:
+            cache.delete(cache_key)
+        
+        # Try to get from cache first
+        cached_data = None if refresh else cache.get(cache_key)
         
         # Check if we need to trigger a scrape
-        auto_update = request.query_params.get('auto_update', 'false').lower() == 'true'
-        
-        if auto_update:
-            # Check if data is stale (more than 5 minutes old)
-            is_stale = True
-            if cached_data and 'last_updated' in cached_data:
+        is_stale = True
+        if cached_data and 'last_updated' in cached_data:
+            try:
                 last_updated = datetime.fromisoformat(cached_data['last_updated'])
                 is_stale = (datetime.now() - last_updated) > timedelta(minutes=5)
+            except (ValueError, TypeError):
+                # If date parsing fails, consider it stale
+                is_stale = True
+        
+        # Trigger background scrape if auto_update and data is stale
+        if auto_update and is_stale:
+            categories_to_scrape = [category] if category else None
+            real_time_manager.trigger_scrape(categories_to_scrape)
             
-            # Trigger background scrape if stale
-            if is_stale:
-                categories_to_scrape = [category] if category else None
-                real_time_manager.trigger_scrape(categories_to_scrape)
+            # Add scrape status to response
+            if cached_data:
+                cached_data['scrape_triggered'] = True
         
         # If we have cached data, return it immediately
         if cached_data:
@@ -240,6 +341,10 @@ def realtime_data(request, category=None):
         
         # Otherwise, get fresh data
         result = real_time_manager.get_latest_data(category)
+        
+        # Add auto_update info
+        if auto_update and is_stale:
+            result['scrape_triggered'] = True
         
         # Cache the result
         cache.set(cache_key, result, 300)  # Cache for 5 minutes

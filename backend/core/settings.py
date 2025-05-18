@@ -75,12 +75,8 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'AhBiNDPahjXEJqOLxIcQQKHMpBltSyKK',
-        'HOST': 'switchback.proxy.rlwy.net',
-        'PORT': '46640',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 

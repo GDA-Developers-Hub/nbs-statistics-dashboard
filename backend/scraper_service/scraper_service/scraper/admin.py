@@ -2,16 +2,17 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import ScraperJob, ScrapedItem
 import json
+from datetime import datetime
 
 @admin.register(ScraperJob)
 class ScraperJobAdmin(admin.ModelAdmin):
     """
     Admin configuration for ScraperJob model.
     """
-    list_display = ('id', 'job_type', 'status', 'start_time', 'end_time', 'duration_display', 'items_found', 'items_processed', 'success_rate_display')
+    list_display = ('id', 'job_type', 'status', 'formatted_start_time', 'formatted_end_time', 'duration_display', 'items_found', 'items_processed', 'success_rate_display')
     list_filter = ('job_type', 'status', 'start_time')
     search_fields = ('url', 'error_message')
-    readonly_fields = ('duration_display', 'success_rate_display')
+    readonly_fields = ('duration_display', 'success_rate_display', 'formatted_start_time', 'formatted_end_time')
     
     fieldsets = (
         ('Job Information', {
@@ -21,7 +22,7 @@ class ScraperJobAdmin(admin.ModelAdmin):
             'fields': ('items_found', 'items_processed', 'items_failed', 'success_rate_display')
         }),
         ('Timing', {
-            'fields': ('start_time', 'end_time', 'duration_display')
+            'fields': ('formatted_start_time', 'formatted_end_time', 'duration_display')
         }),
         ('Error Details', {
             'fields': ('error_message',),
@@ -29,11 +30,27 @@ class ScraperJobAdmin(admin.ModelAdmin):
         }),
     )
     
+    def formatted_start_time(self, obj):
+        if obj.start_time:
+            return obj.start_time.strftime("%Y-%m-%d %H:%M:%S")
+        return "N/A"
+    formatted_start_time.short_description = "Start Time"
+    
+    def formatted_end_time(self, obj):
+        if obj.end_time:
+            return obj.end_time.strftime("%Y-%m-%d %H:%M:%S")
+        return "N/A"
+    formatted_end_time.short_description = "End Time"
+    
     def duration_display(self, obj):
         if obj.duration is not None:
             seconds = obj.duration
-            minutes, seconds = divmod(seconds, 60)
-            if minutes > 0:
+            hours, remainder = divmod(seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            
+            if hours > 0:
+                return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+            elif minutes > 0:
                 return f"{int(minutes)}m {int(seconds)}s"
             return f"{int(seconds)}s"
         return "N/A"
@@ -46,7 +63,7 @@ class ScraperJobAdmin(admin.ModelAdmin):
                 color = "red"
             elif obj.success_rate < 80:
                 color = "orange"
-            return format_html('<span style="color: {};">{:.1f}%</span>', color, obj.success_rate)
+            return format_html('<span style="color: {}; font-weight: bold;">{:.1f}%</span>', color, obj.success_rate)
         return "N/A"
     success_rate_display.short_description = "Success Rate"
     
@@ -70,10 +87,10 @@ class ScrapedItemAdmin(admin.ModelAdmin):
     """
     Admin configuration for ScrapedItem model.
     """
-    list_display = ('id', 'title', 'item_type', 'job_link', 'category', 'status', 'created_at')
+    list_display = ('id', 'title', 'item_type', 'job_link', 'category', 'status', 'formatted_created_at')
     list_filter = ('item_type', 'status', 'created_at')
     search_fields = ('title', 'description', 'source_url')
-    readonly_fields = ('job', 'job_link', 'content_formatted', 'metadata_formatted', 'category', 'time_period')
+    readonly_fields = ('job', 'job_link', 'content_formatted', 'metadata_formatted', 'category', 'time_period', 'formatted_created_at')
     
     fieldsets = (
         ('Item Information', {
@@ -84,12 +101,18 @@ class ScrapedItemAdmin(admin.ModelAdmin):
         }),
         ('Content', {
             'fields': ('content_formatted',),
-            'classes': ('collapse',)
+            'classes': ('wide',)
         }),
         ('Status', {
-            'fields': ('status', 'error_message')
+            'fields': ('status', 'error_message', 'formatted_created_at')
         }),
     )
+    
+    def formatted_created_at(self, obj):
+        if obj.created_at:
+            return obj.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        return "N/A"
+    formatted_created_at.short_description = "Created At"
     
     def job_link(self, obj):
         if obj.job:
@@ -99,7 +122,8 @@ class ScrapedItemAdmin(admin.ModelAdmin):
     job_link.short_description = "Job"
     
     def category(self, obj):
-        return obj.metadata.get('category', '-') if obj.metadata else '-'
+        category = obj.metadata.get('category', '-') if obj.metadata else '-'
+        return format_html('<span style="font-weight: bold;">{}</span>', category)
     category.short_description = "Category"
     
     def time_period(self, obj):
@@ -116,8 +140,8 @@ class ScrapedItemAdmin(admin.ModelAdmin):
             else:
                 content = obj.content
                 
-            formatted = json.dumps(content, indent=2)
-            return format_html('<pre style="max-height: 400px; overflow-y: auto;">{}</pre>', formatted)
+            formatted = json.dumps(content, indent=4, sort_keys=True)
+            return format_html('<pre style="max-height: 500px; overflow-y: auto; background-color: #f8f9fa; padding: 10px; border-radius: 4px;">{}</pre>', formatted)
         except Exception as e:
             return format_html('<div>Error formatting content: {}</div><pre>{}</pre>', str(e), obj.content)
     content_formatted.short_description = "Content"
@@ -127,8 +151,8 @@ class ScrapedItemAdmin(admin.ModelAdmin):
             return "-"
             
         try:
-            formatted = json.dumps(obj.metadata, indent=2)
-            return format_html('<pre>{}</pre>', formatted)
+            formatted = json.dumps(obj.metadata, indent=4, sort_keys=True)
+            return format_html('<pre style="background-color: #f8f9fa; padding: 10px; border-radius: 4px;">{}</pre>', formatted)
         except Exception as e:
             return format_html('<div>Error formatting metadata: {}</div><pre>{}</pre>', str(e), obj.metadata)
     metadata_formatted.short_description = "Metadata"

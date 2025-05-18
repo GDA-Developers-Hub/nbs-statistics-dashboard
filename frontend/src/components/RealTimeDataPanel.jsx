@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Button, Card, Spinner, Alert, Tabs, Tab, Table } from 'react-bootstrap';
+import { Button, Card, Spinner, Alert, Tabs, Tab, Table, Badge, Row, Col } from 'react-bootstrap';
 
-const API_BASE_URL = 'http://localhost:8002/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 const RealTimeDataPanel = ({ category }) => {
   const [data, setData] = useState(null);
@@ -13,7 +13,7 @@ const RealTimeDataPanel = ({ category }) => {
   const [lastUpdated, setLastUpdated] = useState(null);
 
   // Function to fetch data from the real-time API
-  const fetchData = useCallback(async (triggerUpdate = false) => {
+  const fetchData = useCallback(async (triggerUpdate = false, forceRefresh = false) => {
     setLoading(true);
     setError(null);
     
@@ -24,9 +24,13 @@ const RealTimeDataPanel = ({ category }) => {
         url += `${category}/`;
       }
       
-      // Add auto_update parameter if needed
-      if (triggerUpdate) {
-        url += `?auto_update=true`;
+      // Add query parameters
+      const params = [];
+      if (triggerUpdate) params.push('auto_update=true');
+      if (forceRefresh) params.push('refresh=true');
+      
+      if (params.length > 0) {
+        url += `?${params.join('&')}`;
       }
       
       // Make the API call
@@ -35,6 +39,11 @@ const RealTimeDataPanel = ({ category }) => {
       // Update state with the data
       setData(response.data);
       setLastUpdated(new Date());
+      
+      // Check if a scrape was triggered
+      if (response.data.scrape_triggered) {
+        console.log('Background scrape has been triggered');
+      }
       
     } catch (err) {
       console.error('Error fetching real-time data:', err);
@@ -53,15 +62,18 @@ const RealTimeDataPanel = ({ category }) => {
       const categoriesToScrape = category ? [category] : undefined;
       
       // Call the trigger API
-      await axios.post(`${API_BASE_URL}/realtime/trigger/`, {
+      const response = await axios.post(`${API_BASE_URL}/realtime/trigger/`, {
         categories: categoriesToScrape,
         force: true
       });
       
+      // Show message about scrape status
+      console.log(`Scrape status: ${response.data.status}`);
+      
       // Wait a bit for the scrape to start
       setTimeout(() => {
-        // Fetch the updated data
-        fetchData();
+        // Fetch the updated data with forced refresh
+        fetchData(true, true);
         setRefreshing(false);
       }, 2000);
       
@@ -87,6 +99,16 @@ const RealTimeDataPanel = ({ category }) => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Format date for display
+  const formatDate = (isoString) => {
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleString();
+    } catch (e) {
+      return 'Unknown';
+    }
+  };
 
   if (loading && !data) {
     return (
@@ -119,7 +141,7 @@ const RealTimeDataPanel = ({ category }) => {
     return <div>No data available</div>;
   }
 
-  // Group data by categories
+  // Extract data in the new format
   const categories = data.categories || {};
   const categoryNames = Object.keys(categories);
 
@@ -168,51 +190,113 @@ const RealTimeDataPanel = ({ category }) => {
           </Alert>
         )}
         
-        {lastUpdated && (
-          <div className="text-muted small mb-3">
-            Last updated: {lastUpdated.toLocaleTimeString()}
+        <div className="text-muted small mb-3 d-flex justify-content-between">
+          <div>
+            Last updated: {lastUpdated ? lastUpdated.toLocaleString() : 'Never'}
           </div>
-        )}
+          <div>
+            Job completed: {data.job_completed_at ? formatDate(data.job_completed_at) : 'Unknown'}
+          </div>
+        </div>
         
         {categoryNames.length === 0 ? (
           <Alert variant="warning">No data categories available</Alert>
         ) : (
           <Tabs defaultActiveKey={categoryNames[0]} className="mb-3">
-            {categoryNames.map(catName => (
-              <Tab key={catName} eventKey={catName} title={catName.charAt(0).toUpperCase() + catName.slice(1)}>
-                <div className="table-responsive">
-                  <Table striped hover>
-                    <thead>
-                      <tr>
-                        <th>Dataset</th>
-                        <th>Time Period</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {categories[catName].map(item => (
-                        <tr key={item.id}>
-                          <td>{item.title}</td>
-                          <td>{item.time_period || 'N/A'}</td>
-                          <td>
-                            <Button 
-                              variant="outline-primary" 
-                              size="sm"
-                              href={`/dashboard/data/${item.id}`}
-                            >
-                              View Data
-                            </Button>
-                          </td>
+            {categoryNames.map(catName => {
+              const categoryData = categories[catName];
+              const summary = categoryData.summary || {};
+              const items = categoryData.items || [];
+              
+              return (
+                <Tab key={catName} eventKey={catName} title={catName.charAt(0).toUpperCase() + catName.slice(1)}>
+                  {/* Category Summary */}
+                  <Card className="mb-3 bg-light">
+                    <Card.Body>
+                      <Row>
+                        <Col md={4}>
+                          <h6>Summary</h6>
+                          <div><strong>Total Items:</strong> {summary.count || 0}</div>
+                          <div><strong>Latest Period:</strong> {summary.latest_period || 'N/A'}</div>
+                        </Col>
+                        <Col md={8}>
+                          {/* Category-specific statistics */}
+                          {catName === 'demographics' && summary.total_population && (
+                            <div>
+                              <Badge bg="info" className="me-2">Population</Badge>
+                              {summary.total_population.value.toLocaleString()} ({summary.total_population.year})
+                            </div>
+                          )}
+                          {catName === 'economy' && summary.gdp_growth && (
+                            <div>
+                              <Badge bg="success" className="me-2">GDP Growth</Badge>
+                              {summary.gdp_growth.value}% ({summary.gdp_growth.year})
+                            </div>
+                          )}
+                          {catName === 'inflation' && summary.current_inflation && (
+                            <div>
+                              <Badge bg="warning" className="me-2">Inflation Rate</Badge>
+                              {summary.current_inflation.value}% ({summary.current_inflation.period})
+                            </div>
+                          )}
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                  
+                  {/* Data Table */}
+                  <div className="table-responsive">
+                    <Table striped hover>
+                      <thead>
+                        <tr>
+                          <th>Dataset</th>
+                          <th>Time Period</th>
+                          <th>Preview</th>
+                          <th>Actions</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              </Tab>
-            ))}
+                      </thead>
+                      <tbody>
+                        {items.map(item => (
+                          <tr key={item.id}>
+                            <td>{item.title}</td>
+                            <td>{item.time_period || 'N/A'}</td>
+                            <td>
+                              {item.data_preview && (
+                                <Button
+                                  variant="link"
+                                  size="sm"
+                                  onClick={() => alert(JSON.stringify(item.data_preview, null, 2))}
+                                >
+                                  Preview
+                                </Button>
+                              )}
+                            </td>
+                            <td>
+                              <Button 
+                                variant="outline-primary" 
+                                size="sm"
+                                href={`/dashboard/data/${item.id}`}
+                              >
+                                View Data
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                </Tab>
+              );
+            })}
           </Tabs>
         )}
       </Card.Body>
+      <Card.Footer className="text-muted small">
+        <div className="d-flex justify-content-between">
+          <div>Total Items: {data.total_items || 0}</div>
+          <div>Real-time data is {autoRefresh ? 'automatically updated' : 'not auto-updating'}</div>
+        </div>
+      </Card.Footer>
     </Card>
   );
 };
