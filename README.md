@@ -97,4 +97,4 @@ We welcome contributions from developers, data analysts, and translators. Please
 
 MIT License - See the [LICENSE](./LICENSE) file for details.
 
-## 👩🏽‍💼 Maintained by Developers.
+## 👩🏽‍💼 Maintained by GDA Developers.
