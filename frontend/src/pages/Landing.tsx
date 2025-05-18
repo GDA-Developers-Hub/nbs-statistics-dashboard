@@ -1,13 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, BarChart2, Map, TrendingUp, ChevronUp, Database, LineChart } from 'lucide-react'
+import { ArrowRight, BarChart2, Map, TrendingUp, ChevronUp, Database } from 'lucide-react'
+import { LineChart as LucideLineChart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import SomaliaMap from '@/components/map/SomaliaMap'
+import { motion } from 'framer-motion'
+import { LineChart as RechartsLineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 const Landing = () => {
   const [scrolled, setScrolled] = useState(false)
-  const [visible, setVisible] = useState(Array(4).fill(false))
+  const [visible, setVisible] = useState(Array(6).fill(false))
+  const [liveData, setLiveData] = useState([
+    { time: '00:00', value: 65 },
+    { time: '02:00', value: 59 },
+    { time: '04:00', value: 80 },
+    { time: '06:00', value: 81 },
+    { time: '08:00', value: 56 },
+    { time: '10:00', value: 72 },
+    { time: '12:00', value: 89 },
+    { time: '14:00', value: 96 },
+    { time: '16:00', value: 67 },
+    { time: '18:00', value: 75 },
+    { time: '20:00', value: 80 },
+    { time: '22:00', value: 92 },
+    { time: 'now', value: 87 },
+  ])
   
   // Handle scroll effects
   useEffect(() => {
@@ -34,10 +52,37 @@ const Landing = () => {
     
     // Trigger initial animations
     setTimeout(() => {
-      setVisible([true, false, false, false])
+      setVisible([true, false, false, false, false, false])
     }, 300)
     
-    return () => window.removeEventListener('scroll', handleScroll)
+    // Simulate live data updates
+    const dataInterval = setInterval(() => {
+      setLiveData(prevData => {
+        // Shift all values left
+        const newData = [...prevData];
+        
+        // Remove first element
+        newData.shift();
+        
+        // Generate a random value between 55-98
+        const randomValue = Math.floor(Math.random() * 43) + 55;
+        
+        // Add new data point at the end
+        newData.push({ time: 'now', value: randomValue });
+        
+        // Update timestamps
+        return newData.map((point, index) => {
+          if (index === newData.length - 1) return { time: 'now', value: point.value };
+          return { time: point.time, value: point.value };
+        });
+      });
+    }, 5000); // Update every 5 seconds
+    
+    // Clean up event listeners and intervals
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearInterval(dataInterval);
+    }
   }, [])
   
   // Scroll to top function
@@ -52,6 +97,33 @@ const Landing = () => {
     { label: 'Literacy Rate', value: '40%', change: '+5%', trend: 'up' },
     { label: 'Inflation', value: '6.1%', change: '-0.8%', trend: 'down' },
   ]
+  
+  // Data for animated charts
+  const populationTrendData = [
+    { year: '2018', population: 14.7 },
+    { year: '2019', population: 15.1 },
+    { year: '2020', population: 15.4 },
+    { year: '2021', population: 15.7 },
+    { year: '2022', population: 16.0 },
+    { year: '2023', population: 16.3 },
+  ]
+  
+  const gdpData = [
+    { year: '2018', gdp: 7.3 },
+    { year: '2019', gdp: 7.5 },
+    { year: '2020', gdp: 7.2 }, // Covid impact
+    { year: '2021', gdp: 7.6 },
+    { year: '2022', gdp: 7.9 },
+    { year: '2023', gdp: 8.2 },
+  ]
+  
+  const sectorContributionData = [
+    { name: 'Agriculture', value: 60 },
+    { name: 'Services', value: 30 },
+    { name: 'Industry', value: 10 },
+  ]
+  
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -138,26 +210,150 @@ const Landing = () => {
             
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {keyStats.map((stat, index) => (
-                <div
+                <motion.div
                   key={index}
-                  className="rounded-lg bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:translate-y-[-5px] border-t-4 border-blue-500 group"
+                  className="rounded-lg bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:translate-y-[-5px] border-t-4 border-blue-500 group overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={visible[1] ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.1 * index }}
+                  whileHover={{ scale: 1.02 }}
                 >
-                  <h3 className="mb-2 text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors">{stat.label}</h3>
-                  <div className="flex items-baseline">
-                    <span className="text-3xl font-bold group-hover:text-blue-700 transition-colors">{stat.value}</span>
-                    <span className={`ml-2 text-sm font-medium flex items-center ${
-                      stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                  {/* Animated background gradient */}
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                    initial={{ x: '-100%' }}
+                    animate={visible[1] ? { x: 0 } : {}}
+                    transition={{ duration: 1, delay: 0.3 + (0.1 * index) }}
+                  />
+                  
+                  <h3 className="mb-2 text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors relative z-10">{stat.label}</h3>
+                  <div className="flex items-baseline relative z-10">
+                    <motion.span 
+                      className="text-3xl font-bold group-hover:text-blue-700 transition-colors"
+                      initial={{ opacity: 0 }}
+                      animate={visible[1] ? { opacity: 1 } : {}}
+                      transition={{ duration: 0.6, delay: 0.3 + (0.15 * index) }}
+                    >
+                      {stat.value}
+                    </motion.span>
+                    <motion.span 
+                      className={`ml-2 text-sm font-medium flex items-center ${
+                        stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                      }`}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={visible[1] ? { opacity: 1, x: 0 } : {}}
+                      transition={{ duration: 0.4, delay: 0.5 + (0.1 * index) }}
+                    >
                       {stat.change}
                       {stat.trend === 'up' ? (
                         <ArrowRight className="h-3 w-3 ml-1 rotate-45" />
                       ) : (
                         <ArrowRight className="h-3 w-3 ml-1 rotate-[135deg]" />
                       )}
-                    </span>
+                    </motion.span>
                   </div>
-                </div>
+                  <motion.div 
+                    className="h-1 bg-blue-200 mt-4 rounded-full overflow-hidden"
+                    initial={{ width: 0 }}
+                    animate={visible[1] ? { width: '100%' } : {}}
+                    transition={{ duration: 1, delay: 0.5 + (0.1 * index) }}
+                  >
+                    <motion.div 
+                      className={`h-full ${stat.trend === 'up' ? 'bg-green-500' : 'bg-red-500'}`}
+                      initial={{ width: 0 }}
+                      animate={visible[1] ? { width: '70%' } : {}}
+                      transition={{ duration: 1.2, delay: 0.7 + (0.1 * index) }}
+                    />
+                  </motion.div>
+                </motion.div>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Animated Population Trend Chart */}
+      <section className="py-16 bg-white animate-on-scroll">
+        <div className="container mx-auto px-4">
+          <div className={cn(
+            "transform transition-all duration-700 delay-200",
+            visible[1] ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+          )}>
+            <h2 className="mb-8 text-center text-3xl font-bold">
+              <span className="relative inline-block">
+                <span className="relative z-10">Population Growth Trends</span>
+                <span className="absolute bottom-0 left-0 h-3 w-full bg-blue-100 z-0"></span>
+              </span>
+            </h2>
+            
+            <div className="grid gap-6 md:grid-cols-2">
+              <motion.div 
+                className="bg-white p-6 rounded-xl shadow-lg"
+                initial={{ opacity: 0, x: -20 }}
+                animate={visible[1] ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <h3 className="text-lg font-medium mb-4 text-gray-700">Population Growth (Millions)</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={populationTrendData}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="colorPopulation" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="year" />
+                      <YAxis domain={[14, 17]} />
+                      <Tooltip 
+                        formatter={(value) => [`${value}M`, 'Population']}
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                          border: 'none'
+                        }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="population" 
+                        stroke="#3B82F6" 
+                        fillOpacity={1} 
+                        fill="url(#colorPopulation)" 
+                        strokeWidth={2}
+                        activeDot={{ r: 6, fill: '#3B82F6', stroke: '#fff', strokeWidth: 2 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <p className="text-sm text-gray-500 mt-4">Source: Somalia National Bureau of Statistics, Annual Population Report</p>
+              </motion.div>
+              
+              <motion.div 
+                className="flex flex-col justify-center px-6"
+                initial={{ opacity: 0, x: 20 }}
+                animate={visible[1] ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <h3 className="text-xl font-semibold mb-4">Understanding Our Growth</h3>
+                <p className="text-gray-600 mb-6">
+                  Somalia's population has been steadily increasing at an average rate of 2.9% annually over the last five years.
+                  This growth presents both opportunities and challenges for our economic and social development.
+                </p>
+                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                  <h4 className="font-medium text-blue-700 mb-2">Key Insights:</h4>
+                  <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                    <li>Urban population growing faster than rural areas</li>
+                    <li>Youth (under 25) make up approximately 60% of the population</li>
+                    <li>Mogadishu remains the most densely populated area</li>
+                    <li>Internal migration continues to impact regional demographics</li>
+                  </ul>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -209,6 +405,140 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Economic Data Visualizations */}
+      <section className="py-20 bg-gradient-to-b from-blue-50 to-white animate-on-scroll">
+        <div className="container mx-auto px-4">
+          <div className={cn(
+            "transform transition-all duration-700 delay-300",
+            visible[2] ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+          )}>
+            <h2 className="mb-10 text-center text-3xl font-bold">
+              <span className="relative inline-block">
+                <span className="relative z-10">Economic Development</span>
+                <span className="absolute bottom-0 left-0 h-3 w-full bg-blue-100 z-0"></span>
+              </span>
+            </h2>
+            
+            <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+              {/* GDP Growth Chart */}
+              <motion.div 
+                className="md:col-span-2 xl:col-span-2 bg-white p-6 rounded-xl shadow-lg"
+                initial={{ opacity: 0, y: 20 }}
+                animate={visible[2] ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6 }}
+              >
+                <h3 className="text-lg font-medium mb-4 text-gray-700">GDP Growth (Billion USD)</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={gdpData}
+                      margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                      <XAxis dataKey="year" />
+                      <YAxis domain={[7, 8.5]} />
+                      <Tooltip 
+                        formatter={(value) => [`$${value}B`, 'GDP']}
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                          border: 'none'
+                        }}
+                      />
+                      <Bar 
+                        dataKey="gdp" 
+                        fill="#3B82F6" 
+                        radius={[4, 4, 0, 0]}
+                        animationDuration={1500}
+                        barSize={40}
+                      >
+                        {gdpData.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={`rgba(59, 130, 246, ${0.7 + (index * 0.05)})`} 
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex justify-between mt-4 text-sm text-gray-500">
+                  <p>Source: Central Bank of Somalia, Annual Report</p>
+                  <p className="font-medium text-blue-600">GDP growth trend: +4.2% YoY</p>
+                </div>
+              </motion.div>
+              
+              {/* Economic Sectors Pie Chart */}
+              <motion.div 
+                className="bg-white p-6 rounded-xl shadow-lg"
+                initial={{ opacity: 0, y: 20 }}
+                animate={visible[2] ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <h3 className="text-lg font-medium mb-4 text-gray-700">Economic Sector Contribution (%)</h3>
+                <div className="h-64 flex justify-center items-center">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Tooltip 
+                        formatter={(value) => [`${value}%`, 'Contribution']}
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                          border: 'none'
+                        }}
+                      />
+                      <Pie
+                        data={sectorContributionData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                        animationDuration={1500}
+                        animationBegin={300}
+                      >
+                        {sectorContributionData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  {sectorContributionData.map((entry, index) => (
+                    <div key={index} className="flex items-center">
+                      <div
+                        className="h-3 w-3 rounded-full mr-2"
+                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      />
+                      <span className="text-sm text-gray-600">{entry.name} ({entry.value}%)</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-500 mt-4">Source: National Economic Survey</p>
+              </motion.div>
+            </div>
+            
+            <motion.div 
+              className="mt-10 bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm"
+              initial={{ opacity: 0, y: 20 }}
+              animate={visible[2] ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <h3 className="font-medium text-blue-800 mb-2">Economic Outlook Summary</h3>
+              <p className="text-gray-700">
+                Somalia's economy continues to show resilience and growth despite global challenges. The agricultural sector remains
+                the backbone of the economy, with services growing rapidly, particularly in urban areas. Foreign investments have 
+                increased by 15% in the last year, primarily in infrastructure and telecommunications sectors.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Interactive Map Placeholder - with enhanced styling */}
       <section className="py-20 animate-on-scroll">
         <div className="container mx-auto px-4">
@@ -219,26 +549,117 @@ const Landing = () => {
             <div className="mb-8 flex flex-col items-center">
               <h2 className="mb-4 text-3xl font-bold">
                 <span className="relative inline-block">
-                  <span className="relative z-10">Interactive Map</span>
+                  <span className="relative z-10">Interactive Map & Live Data</span>
                   <span className="absolute bottom-0 left-0 h-3 w-full bg-blue-100 z-0"></span>
                 </span>
               </h2>
               <p className="mb-6 max-w-2xl text-center text-gray-600 leading-relaxed">
-                Click on a region to view detailed statistics for that area and explore Somalia's geographical data.
+                Explore Somalia's regional statistics with our interactive map and watch live data updates from our monitoring systems.
               </p>
             </div>
-            <div className="mx-auto aspect-video max-w-4xl rounded-xl overflow-hidden shadow-xl border border-gray-200">
-              {/* Real Somalia Map component with Mapbox integration */}
-              <SomaliaMap 
-                selectedRegion="all" 
-                onRegionSelect={(regionCode) => {
-                  console.log('Selected region:', regionCode);
-                  // This is just for demonstration in the landing page
-                  // We don't actually change the region selection here
-                }}
-                height="500px"
-              />
+
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              {/* Map Column */}
+              <motion.div 
+                className="lg:col-span-3 rounded-xl overflow-hidden shadow-xl border border-gray-200"
+                initial={{ opacity: 0, x: -20 }}
+                animate={visible[3] ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.5 }}
+              >
+                <SomaliaMap 
+                  selectedRegion="all" 
+                  onRegionSelect={(regionCode) => {
+                    console.log('Selected region:', regionCode);
+                    // This is just for demonstration in the landing page
+                    // We don't actually change the region selection here
+                  }}
+                  height="500px"
+                />
+              </motion.div>
+
+              {/* Live Data Column */}
+              <motion.div 
+                className="lg:col-span-2 bg-white rounded-xl shadow-xl border border-gray-200 p-6 flex flex-col"
+                initial={{ opacity: 0, x: 20 }}
+                animate={visible[3] ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <h3 className="text-lg font-medium mb-4 text-gray-700 flex items-center">
+                  <span className="mr-2">Live Data Feed</span>
+                  <motion.div 
+                    className="h-2 w-2 rounded-full bg-green-500" 
+                    animate={{ 
+                      scale: [1, 1.5, 1],
+                      opacity: [1, 0.8, 1] 
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </h3>
+
+                <div className="h-64 mb-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsLineChart
+                      data={liveData}
+                      margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                      <XAxis dataKey="time" />
+                      <YAxis domain={[50, 100]} />
+                      <Tooltip
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                          border: 'none'
+                        }}
+                      />
+                      <defs>
+                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#10B981" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
+                      <Line 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke="#10B981" 
+                        strokeWidth={2}
+                        dot={{ r: 4, fill: '#10B981', stroke: '#fff', strokeWidth: 2 }}
+                        activeDot={{ r: 6, fill: '#10B981', stroke: '#fff', strokeWidth: 2 }}
+                        isAnimationActive={true}
+                      />
+                    </RechartsLineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="space-y-3 flex-grow">
+                  {/* Animated data feed entries */}
+                  {[
+                    { time: '14 min ago', event: 'Temperature data updated for Mogadishu', value: '28°C' },
+                    { time: '36 min ago', event: 'Rainfall data updated for Baidoa', value: '3.2mm' },
+                    { time: '1 hour ago', event: 'Agricultural yield report from Kismayo', value: '+4.5%' },
+                  ].map((item, index) => (
+                    <motion.div 
+                      key={index}
+                      className="p-3 bg-gray-50 rounded-lg border border-gray-100 flex justify-between items-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={visible[3] ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.3, delay: 0.4 + (index * 0.1) }}
+                    >
+                      <div>
+                        <div className="flex items-center">
+                          <span className="h-2 w-2 bg-blue-500 rounded-full mr-2"></span>
+                          <span className="text-xs text-gray-500">{item.time}</span>
+                        </div>
+                        <p className="text-sm font-medium text-gray-700">{item.event}</p>
+                      </div>
+                      <span className="font-bold text-green-600">{item.value}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
             </div>
+
             <div className="mt-8 flex justify-center">
               <Link to="/dashboard">
                 <Button variant="outline" className="rounded-full px-8 py-6 font-medium hover:bg-blue-50 transition-all duration-300 flex items-center space-x-2 border-blue-200 shadow-sm hover:shadow-md">
@@ -256,7 +677,7 @@ const Landing = () => {
         <div className="container mx-auto px-4">
           <div className={cn(
             "transform transition-all duration-700 delay-400",
-            visible[3] ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            visible[4] ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           )}>
             <h2 className="mb-10 text-center text-3xl font-bold">
               <span className="relative inline-block">
@@ -280,10 +701,10 @@ const Landing = () => {
                       <div className="mr-3 rounded-md bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">{update.tag}</div>
                       <h3 className="font-medium">{update.title}</h3>
                     </div>
-                    <span className="mt-2 sm:mt-0 text-sm text-gray-500 flex items-center">
-                      <LineChart className="h-3 w-3 mr-1" />
+                    <div className="mt-2 sm:mt-0 text-sm text-gray-500 flex items-center">
+                      <LucideLineChart className="h-3 w-3 mr-1" />
                       {update.date}
-                    </span>
+                    </div>
                   </div>
                 </div>
               ))}
