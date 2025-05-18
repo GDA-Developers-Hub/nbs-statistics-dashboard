@@ -153,17 +153,9 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS', 
-    'http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:3000'
+    'http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173'
 ).split(',')
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
+
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -195,14 +187,6 @@ CELERY_TASK_REJECT_ON_WORKER_LOST = True
 # Scraper settings
 SNBS_BASE_URL = os.environ.get('SNBS_BASE_URL', 'https://nbs.gov.so/')
 SCRAPER_SCHEDULE_INTERVAL = int(os.environ.get('SCRAPER_SCHEDULE_INTERVAL', '1440'))  # minutes
-
-# GIS settings disabled for local development
-# LEAFLET_CONFIG = {
-#     'DEFAULT_CENTER': (5.152149, 46.199616),  # Somalia center coordinates
-#     'DEFAULT_ZOOM': 6,
-#     'MIN_ZOOM': 3,
-#     'MAX_ZOOM': 18,
-# }
 
 # API version
 API_VERSION = os.environ.get('API_VERSION', 'v1')
