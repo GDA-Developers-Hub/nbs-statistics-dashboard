@@ -2,6 +2,7 @@ import React from 'react'
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import MapDashboard from '@/components/dashboard/MapDashboard'
 
 // Mock data for charts according to project requirements
 const populationData = [
@@ -291,6 +292,12 @@ const Overview = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+      
+      {/* Regional Statistics Map Dashboard */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Regional Statistics</h2>
+        <MapDashboard className="w-full" />
       </div>
     </div>
   )
