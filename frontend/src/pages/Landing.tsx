@@ -1,31 +1,70 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, BarChart2, Map, TrendingUp, ChevronUp, Database } from 'lucide-react'
+import { ArrowRight, BarChart2, Map, TrendingUp, ChevronUp, Database, Filter } from 'lucide-react'
 import { LineChart as LucideLineChart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import SomaliaMap from '@/components/map/SomaliaMap'
 import { motion } from 'framer-motion'
 import { LineChart as RechartsLineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { useTheme } from '@/lib/themeContext'
+import { 
+  useStatHighlights, 
+  usePopulationData, 
+  useGDPData, 
+  useSectorData, 
+  useLiveDataStream, 
+  useLiveUpdates,
+  useTickerData,
+  fetchLatestNews
+} from '@/lib/dataService'
 
 const Landing = () => {
   const [scrolled, setScrolled] = useState(false)
   const [visible, setVisible] = useState(Array(6).fill(false))
-  const [liveData, setLiveData] = useState([
-    { time: '00:00', value: 65 },
-    { time: '02:00', value: 59 },
-    { time: '04:00', value: 80 },
-    { time: '06:00', value: 81 },
-    { time: '08:00', value: 56 },
-    { time: '10:00', value: 72 },
-    { time: '12:00', value: 89 },
-    { time: '14:00', value: 96 },
-    { time: '16:00', value: 67 },
-    { time: '18:00', value: 75 },
-    { time: '20:00', value: 80 },
-    { time: '22:00', value: 92 },
-    { time: 'now', value: 87 },
+  
+  // Theme
+  const { theme } = useTheme()
+  
+  // Real-time data from data services
+  const keyStats = useStatHighlights()
+  const populationTrendData = usePopulationData()
+  const gdpData = useGDPData()
+  const sectorContributionData = useSectorData()
+  const liveData = useLiveDataStream()
+  const liveUpdates = useLiveUpdates()
+  const tickerData = useTickerData()
+  const [newsUpdates, setNewsUpdates] = useState([
+    { title: 'Census Population Data Updated', date: 'May 15, 2025', tag: 'Demographics' },
+    { title: 'Q1 2025 Economic Indicators Released', date: 'April 28, 2025', tag: 'Economics' },
+    { title: 'Annual Education Statistics Report', date: 'March 10, 2025', tag: 'Education' },
+    { title: 'Regional Development Indices', date: 'February 22, 2025', tag: 'Development' },
   ])
+  
+  // Filters
+  const [selectedRegion, setSelectedRegion] = useState('all')
+  const [yearFilter, setYearFilter] = useState('2023')
+  const [sectorFilter, setSectorFilter] = useState('all')
+  const [showFilters, setShowFilters] = useState(false)
+  
+  // Fetch latest news updates
+  useEffect(() => {
+    const getLatestNews = async () => {
+      try {
+        const news = await fetchLatestNews()
+        setNewsUpdates(news)
+      } catch (error) {
+        console.error('Failed to fetch news updates:', error)
+      }
+    }
+    
+    getLatestNews()
+    
+    // Refresh news every 5 minutes
+    const newsInterval = setInterval(getLatestNews, 300000)
+    return () => clearInterval(newsInterval)
+  }, [])
   
   // Handle scroll effects
   useEffect(() => {
@@ -55,33 +94,9 @@ const Landing = () => {
       setVisible([true, false, false, false, false, false])
     }, 300)
     
-    // Simulate live data updates
-    const dataInterval = setInterval(() => {
-      setLiveData(prevData => {
-        // Shift all values left
-        const newData = [...prevData];
-        
-        // Remove first element
-        newData.shift();
-        
-        // Generate a random value between 55-98
-        const randomValue = Math.floor(Math.random() * 43) + 55;
-        
-        // Add new data point at the end
-        newData.push({ time: 'now', value: randomValue });
-        
-        // Update timestamps
-        return newData.map((point, index) => {
-          if (index === newData.length - 1) return { time: 'now', value: point.value };
-          return { time: point.time, value: point.value };
-        });
-      });
-    }, 5000); // Update every 5 seconds
-    
-    // Clean up event listeners and intervals
+    // Clean up event listeners
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearInterval(dataInterval);
+      window.removeEventListener('scroll', handleScroll)
     }
   }, [])
   
@@ -89,39 +104,6 @@ const Landing = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-  
-  // Mock data for statistical highlights
-  const keyStats = [
-    { label: 'Population', value: '16.3M', change: '+2.9%', trend: 'up' },
-    { label: 'GDP Growth', value: '4.2%', change: '+0.5%', trend: 'up' },
-    { label: 'Literacy Rate', value: '40%', change: '+5%', trend: 'up' },
-    { label: 'Inflation', value: '6.1%', change: '-0.8%', trend: 'down' },
-  ]
-  
-  // Data for animated charts
-  const populationTrendData = [
-    { year: '2018', population: 14.7 },
-    { year: '2019', population: 15.1 },
-    { year: '2020', population: 15.4 },
-    { year: '2021', population: 15.7 },
-    { year: '2022', population: 16.0 },
-    { year: '2023', population: 16.3 },
-  ]
-  
-  const gdpData = [
-    { year: '2018', gdp: 7.3 },
-    { year: '2019', gdp: 7.5 },
-    { year: '2020', gdp: 7.2 }, // Covid impact
-    { year: '2021', gdp: 7.6 },
-    { year: '2022', gdp: 7.9 },
-    { year: '2023', gdp: 8.2 },
-  ]
-  
-  const sectorContributionData = [
-    { name: 'Agriculture', value: 60 },
-    { name: 'Services', value: 30 },
-    { name: 'Industry', value: 10 },
-  ]
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
 
@@ -131,7 +113,7 @@ const Landing = () => {
       <header className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300",
         scrolled 
-          ? "bg-white/80 backdrop-blur-md shadow-sm" 
+          ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm" 
           : "bg-transparent"
       )}>
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -146,13 +128,14 @@ const Landing = () => {
             </Link>
           </div>
           <nav className="hidden space-x-6 md:flex">
-            <Link to="/" className="text-sm font-medium hover:text-blue-600 transition-colors">Home</Link>
-            <Link to="/dashboard" className="text-sm font-medium hover:text-blue-600 transition-colors">Dashboard</Link>
-            <a href="#about" className="text-sm font-medium hover:text-blue-600 transition-colors">About</a>
+            <Link to="/" className="text-sm font-medium hover:text-blue-600 transition-colors dark:text-gray-200 dark:hover:text-blue-400">Home</Link>
+            <Link to="/dashboard" className="text-sm font-medium hover:text-blue-600 transition-colors dark:text-gray-200 dark:hover:text-blue-400">Dashboard</Link>
+            <a href="#about" className="text-sm font-medium hover:text-blue-600 transition-colors dark:text-gray-200 dark:hover:text-blue-400">About</a>
           </nav>
-          <div>
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
             <Link to="/login">
-              <Button variant="outline" size="sm" className="mr-2 hover:bg-blue-50 transition-colors">
+              <Button variant="outline" size="sm" className="hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">
                 Log In
               </Button>
             </Link>
@@ -320,77 +303,23 @@ const Landing = () => {
             {[...Array(3)].map((_, setIndex) => (
               <React.Fragment key={`ticker-set-${setIndex}`}>
                 <div className="flex items-center gap-6 ml-10">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-blue-700">GDP</span>
-                    <span className="text-sm text-gray-700">$8.2B</span>
-                    <motion.span 
-                      className="text-xs px-1.5 py-0.5 rounded-sm text-green-700 bg-green-100/80"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      +4.2%
-                    </motion.span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-blue-700">INFL</span>
-                    <span className="text-sm text-gray-700">6.1%</span>
-                    <motion.span 
-                      className="text-xs px-1.5 py-0.5 rounded-sm text-red-700 bg-red-100/80"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-                    >
-                      -0.8%
-                    </motion.span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-blue-700">UNEMP</span>
-                    <span className="text-sm text-gray-700">14.2%</span>
-                    <motion.span 
-                      className="text-xs px-1.5 py-0.5 rounded-sm text-red-700 bg-red-100/80"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
-                    >
-                      +0.2%
-                    </motion.span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-blue-700">FDI</span>
-                    <span className="text-sm text-gray-700">$412M</span>
-                    <motion.span 
-                      className="text-xs px-1.5 py-0.5 rounded-sm text-green-700 bg-green-100/80"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: 0.9 }}
-                    >
-                      +15.4%
-                    </motion.span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-blue-700">EXP</span>
-                    <span className="text-sm text-gray-700">$1.8B</span>
-                    <motion.span 
-                      className="text-xs px-1.5 py-0.5 rounded-sm text-green-700 bg-green-100/80"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: 1.2 }}
-                    >
-                      +7.1%
-                    </motion.span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-blue-700">LIT</span>
-                    <span className="text-sm text-gray-700">40%</span>
-                    <motion.span 
-                      className="text-xs px-1.5 py-0.5 rounded-sm text-green-700 bg-green-100/80"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
-                    >
-                      +5.0%
-                    </motion.span>
-                  </div>
+                  {tickerData.map((item, index) => (
+                    <div key={`${setIndex}-${index}`} className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-blue-700">{item.symbol}</span>
+                      <span className="text-sm text-gray-700">{item.value}</span>
+                      <motion.span 
+                        className={`text-xs px-1.5 py-0.5 rounded-sm ${
+                          item.trend === 'up' 
+                            ? 'text-green-700 bg-green-100/80' 
+                            : 'text-red-700 bg-red-100/80'
+                        }`}
+                        animate={{ opacity: [0.7, 1, 0.7] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
+                      >
+                        {item.change}
+                      </motion.span>
+                    </div>
+                  ))}
                 </div>
                 
                 <div className="h-4 border-l border-gray-300/50 mx-4" />
@@ -647,12 +576,109 @@ const Landing = () => {
             "transform transition-all duration-700 delay-200",
             visible[2] ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           )}>
-            <h2 className="mb-12 text-center text-3xl font-bold">
-              <span className="relative inline-block">
-                <span className="relative z-10">Dashboard Features</span>
-                <span className="absolute bottom-0 left-0 h-3 w-full bg-blue-100 z-0"></span>
-              </span>
-            </h2>
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-center text-3xl font-bold">
+                <span className="relative inline-block">
+                  <span className="relative z-10">Dashboard Features</span>
+                  <span className="absolute bottom-0 left-0 h-3 w-full bg-blue-100 z-0"></span>
+                </span>
+              </h2>
+              
+              {/* Filter Button */}
+              <motion.button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 text-sm text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Filter size={16} />
+                <span>Filters</span>
+              </motion.button>
+            </div>
+            
+            {/* Filters Panel */}
+            <motion.div
+              className="bg-white rounded-lg shadow-lg p-6 mb-8 border border-gray-100"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ 
+                height: showFilters ? 'auto' : 0,
+                opacity: showFilters ? 1 : 0
+              }}
+              transition={{ duration: 0.3 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">Region</label>
+                  <select 
+                    value={selectedRegion} 
+                    onChange={(e) => setSelectedRegion(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  >
+                    <option value="all">All Regions</option>
+                    <option value="mogadishu">Mogadishu</option>
+                    <option value="puntland">Puntland</option>
+                    <option value="somaliland">Somaliland</option>
+                    <option value="jubaland">Jubaland</option>
+                    <option value="hirshabelle">Hirshabelle</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">Year</label>
+                  <select 
+                    value={yearFilter} 
+                    onChange={(e) => setYearFilter(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  >
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">Sector</label>
+                  <select 
+                    value={sectorFilter} 
+                    onChange={(e) => setSectorFilter(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  >
+                    <option value="all">All Sectors</option>
+                    <option value="agriculture">Agriculture</option>
+                    <option value="services">Services</option>
+                    <option value="industry">Industry</option>
+                    <option value="education">Education</option>
+                    <option value="healthcare">Healthcare</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex justify-end mt-4">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mr-2"
+                  onClick={() => {
+                    setSelectedRegion('all');
+                    setYearFilter('2023');
+                    setSectorFilter('all');
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Apply Filters
+                </Button>
+              </div>
+            </motion.div>
+
             <div className="grid gap-8 md:grid-cols-3">
               <div className="flex flex-col items-center text-center rounded-xl bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-xl hover:translate-y-[-5px] border border-gray-100">
                 <div className="mb-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 p-4 transform transition-transform group-hover:scale-110">
@@ -834,25 +860,39 @@ const Landing = () => {
                   <span className="absolute bottom-0 left-0 h-3 w-full bg-blue-100 z-0"></span>
                 </span>
               </h2>
-              <p className="mb-6 max-w-2xl text-center text-gray-600 leading-relaxed">
+              <p className="mb-6 max-w-2xl text-center text-gray-600 dark:text-gray-300 leading-relaxed">
                 Explore Somalia's regional statistics with our interactive map and watch live data updates from our monitoring systems.
               </p>
+              
+              {/* Region selection for map */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {['all', 'mogadishu', 'puntland', 'somaliland', 'jubaland', 'hirshabelle'].map((region) => (
+                  <Button
+                    key={region}
+                    variant={selectedRegion === region ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedRegion(region)}
+                    className="capitalize"
+                  >
+                    {region === 'all' ? 'All Regions' : region}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               {/* Map Column */}
               <motion.div 
-                className="lg:col-span-3 rounded-xl overflow-hidden shadow-xl border border-gray-200"
+                className="lg:col-span-3 rounded-xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700"
                 initial={{ opacity: 0, x: -20 }}
                 animate={visible[3] ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.5 }}
               >
                 <SomaliaMap 
-                  selectedRegion="all" 
+                  selectedRegion={selectedRegion} 
                   onRegionSelect={(regionCode) => {
                     console.log('Selected region:', regionCode);
-                    // This is just for demonstration in the landing page
-                    // We don't actually change the region selection here
+                    setSelectedRegion(regionCode);
                   }}
                   height="500px"
                 />
@@ -860,12 +900,12 @@ const Landing = () => {
 
               {/* Live Data Column */}
               <motion.div 
-                className="lg:col-span-2 bg-white rounded-xl shadow-xl border border-gray-200 p-6 flex flex-col"
+                className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col"
                 initial={{ opacity: 0, x: 20 }}
                 animate={visible[3] ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <h3 className="text-lg font-medium mb-4 text-gray-700 flex items-center">
+                <h3 className="text-lg font-medium mb-4 text-gray-700 dark:text-gray-200 flex items-center">
                   <span className="mr-2">Live Data Feed</span>
                   <motion.div 
                     className="h-2 w-2 rounded-full bg-green-500" 
@@ -883,12 +923,13 @@ const Landing = () => {
                       data={liveData}
                       margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                      <XAxis dataKey="time" />
-                      <YAxis domain={[50, 100]} />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? "#374151" : "#f0f0f0"} />
+                      <XAxis dataKey="time" stroke={theme === 'dark' ? "#9CA3AF" : "#6B7280"} />
+                      <YAxis domain={[50, 100]} stroke={theme === 'dark' ? "#9CA3AF" : "#6B7280"} />
                       <Tooltip
                         contentStyle={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: theme === 'dark' ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                          color: theme === 'dark' ? '#E5E7EB' : 'inherit',
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                           border: 'none'
@@ -905,8 +946,8 @@ const Landing = () => {
                         dataKey="value" 
                         stroke="#10B981" 
                         strokeWidth={2}
-                        dot={{ r: 4, fill: '#10B981', stroke: '#fff', strokeWidth: 2 }}
-                        activeDot={{ r: 6, fill: '#10B981', stroke: '#fff', strokeWidth: 2 }}
+                        dot={{ r: 4, fill: '#10B981', stroke: theme === 'dark' ? '#1F2937' : '#fff', strokeWidth: 2 }}
+                        activeDot={{ r: 6, fill: '#10B981', stroke: theme === 'dark' ? '#1F2937' : '#fff', strokeWidth: 2 }}
                         isAnimationActive={true}
                       />
                     </RechartsLineChart>
@@ -915,14 +956,10 @@ const Landing = () => {
 
                 <div className="space-y-3 flex-grow">
                   {/* Animated data feed entries */}
-                  {[
-                    { time: '14 min ago', event: 'Temperature data updated for Mogadishu', value: '28°C' },
-                    { time: '36 min ago', event: 'Rainfall data updated for Baidoa', value: '3.2mm' },
-                    { time: '1 hour ago', event: 'Agricultural yield report from Kismayo', value: '+4.5%' },
-                  ].map((item, index) => (
+                  {liveUpdates.map((item, index) => (
                     <motion.div 
                       key={index}
-                      className="p-3 bg-gray-50 rounded-lg border border-gray-100 flex justify-between items-center"
+                      className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-100 dark:border-gray-600 flex justify-between items-center"
                       initial={{ opacity: 0, y: 10 }}
                       animate={visible[3] ? { opacity: 1, y: 0 } : {}}
                       transition={{ duration: 0.3, delay: 0.4 + (index * 0.1) }}
@@ -930,11 +967,11 @@ const Landing = () => {
                       <div>
                         <div className="flex items-center">
                           <span className="h-2 w-2 bg-blue-500 rounded-full mr-2"></span>
-                          <span className="text-xs text-gray-500">{item.time}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">{item.time}</span>
                         </div>
-                        <p className="text-sm font-medium text-gray-700">{item.event}</p>
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{item.event}</p>
                       </div>
-                      <span className="font-bold text-green-600">{item.value}</span>
+                      <span className="font-bold text-green-600 dark:text-green-400">{item.value}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -967,12 +1004,7 @@ const Landing = () => {
               </span>
             </h2>
             <div className="mx-auto max-w-3xl space-y-4">
-              {[
-                { title: 'Census Population Data Updated', date: 'May 15, 2025', tag: 'Demographics' },
-                { title: 'Q1 2025 Economic Indicators Released', date: 'April 28, 2025', tag: 'Economics' },
-                { title: 'Annual Education Statistics Report', date: 'March 10, 2025', tag: 'Education' },
-                { title: 'Regional Development Indices', date: 'February 22, 2025', tag: 'Development' },
-              ].map((update, index) => (
+              {newsUpdates.map((update, index) => (
                 <div 
                   key={index} 
                   className="rounded-xl border border-gray-100 bg-white p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:translate-x-1"
