@@ -305,6 +305,100 @@ const Landing = () => {
           </motion.div>
         </div>
         
+        {/* Stock Exchange Ticker Animation */}
+        <div className="absolute bottom-0 left-0 right-0 bg-white/10 backdrop-blur-sm border-t border-b border-blue-100/30 overflow-hidden h-14 flex items-center">
+          <motion.div 
+            className="flex whitespace-nowrap items-center gap-8"
+            animate={{ x: [0, "-100%"] }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 25,
+              ease: "linear"
+            }}
+          >
+            {/* Repeating ticker items */}
+            {[...Array(3)].map((_, setIndex) => (
+              <React.Fragment key={`ticker-set-${setIndex}`}>
+                <div className="flex items-center gap-6 ml-10">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-blue-700">GDP</span>
+                    <span className="text-sm text-gray-700">$8.2B</span>
+                    <motion.span 
+                      className="text-xs px-1.5 py-0.5 rounded-sm text-green-700 bg-green-100/80"
+                      animate={{ opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      +4.2%
+                    </motion.span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-blue-700">INFL</span>
+                    <span className="text-sm text-gray-700">6.1%</span>
+                    <motion.span 
+                      className="text-xs px-1.5 py-0.5 rounded-sm text-red-700 bg-red-100/80"
+                      animate={{ opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+                    >
+                      -0.8%
+                    </motion.span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-blue-700">UNEMP</span>
+                    <span className="text-sm text-gray-700">14.2%</span>
+                    <motion.span 
+                      className="text-xs px-1.5 py-0.5 rounded-sm text-red-700 bg-red-100/80"
+                      animate={{ opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
+                    >
+                      +0.2%
+                    </motion.span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-blue-700">FDI</span>
+                    <span className="text-sm text-gray-700">$412M</span>
+                    <motion.span 
+                      className="text-xs px-1.5 py-0.5 rounded-sm text-green-700 bg-green-100/80"
+                      animate={{ opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.9 }}
+                    >
+                      +15.4%
+                    </motion.span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-blue-700">EXP</span>
+                    <span className="text-sm text-gray-700">$1.8B</span>
+                    <motion.span 
+                      className="text-xs px-1.5 py-0.5 rounded-sm text-green-700 bg-green-100/80"
+                      animate={{ opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 1.2 }}
+                    >
+                      +7.1%
+                    </motion.span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-blue-700">LIT</span>
+                    <span className="text-sm text-gray-700">40%</span>
+                    <motion.span 
+                      className="text-xs px-1.5 py-0.5 rounded-sm text-green-700 bg-green-100/80"
+                      animate={{ opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+                    >
+                      +5.0%
+                    </motion.span>
+                  </div>
+                </div>
+                
+                <div className="h-4 border-l border-gray-300/50 mx-4" />
+              </React.Fragment>
+            ))}
+          </motion.div>
+        </div>
+        
         <div className="container relative z-10 mx-auto px-4 text-center">
           <motion.div 
             className="transform"
