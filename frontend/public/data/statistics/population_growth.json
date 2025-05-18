@@ -1,0 +1,216 @@
+{
+  "title": "Somalia Population Growth by Region (2020-2024)",
+  "description": "Annual population figures by region showing growth trends over a 5-year period",
+  "source": "Somalia National Bureau of Statistics",
+  "lastUpdated": "2024-05-18",
+  "data": [
+    {
+      "region": "Awdal",
+      "values": [
+        { "year": 2020, "value": 723456 },
+        { "year": 2021, "value": 738925 },
+        { "year": 2022, "value": 754703 },
+        { "year": 2023, "value": 770797 },
+        { "year": 2024, "value": 787214 }
+      ],
+      "growthRate": 2.1
+    },
+    {
+      "region": "Bakool",
+      "values": [
+        { "year": 2020, "value": 367892 },
+        { "year": 2021, "value": 376589 },
+        { "year": 2022, "value": 385504 },
+        { "year": 2023, "value": 394642 },
+        { "year": 2024, "value": 404008 }
+      ],
+      "growthRate": 2.3
+    },
+    {
+      "region": "Banaadir",
+      "values": [
+        { "year": 2020, "value": 1652783 },
+        { "year": 2021, "value": 1702366 },
+        { "year": 2022, "value": 1753437 },
+        { "year": 2023, "value": 1806040 },
+        { "year": 2024, "value": 1860221 }
+      ],
+      "growthRate": 3.0
+    },
+    {
+      "region": "Bari",
+      "values": [
+        { "year": 2020, "value": 815623 },
+        { "year": 2021, "value": 836013 },
+        { "year": 2022, "value": 856914 },
+        { "year": 2023, "value": 878337 },
+        { "year": 2024, "value": 900295 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Bay",
+      "values": [
+        { "year": 2020, "value": 712450 },
+        { "year": 2021, "value": 730261 },
+        { "year": 2022, "value": 748518 },
+        { "year": 2023, "value": 767230 },
+        { "year": 2024, "value": 786411 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Galguduud",
+      "values": [
+        { "year": 2020, "value": 569234 },
+        { "year": 2021, "value": 583465 },
+        { "year": 2022, "value": 598051 },
+        { "year": 2023, "value": 613003 },
+        { "year": 2024, "value": 628328 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Gedo",
+      "values": [
+        { "year": 2020, "value": 508765 },
+        { "year": 2021, "value": 521484 },
+        { "year": 2022, "value": 534521 },
+        { "year": 2023, "value": 547884 },
+        { "year": 2024, "value": 561581 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Hiiraan",
+      "values": [
+        { "year": 2020, "value": 412387 },
+        { "year": 2021, "value": 422696 },
+        { "year": 2022, "value": 433264 },
+        { "year": 2023, "value": 444095 },
+        { "year": 2024, "value": 455198 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Jubbada Dhexe",
+      "values": [
+        { "year": 2020, "value": 362541 },
+        { "year": 2021, "value": 371605 },
+        { "year": 2022, "value": 380895 },
+        { "year": 2023, "value": 390417 },
+        { "year": 2024, "value": 400178 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Jubbada Hoose",
+      "values": [
+        { "year": 2020, "value": 495621 },
+        { "year": 2021, "value": 510490 },
+        { "year": 2022, "value": 525804 },
+        { "year": 2023, "value": 541578 },
+        { "year": 2024, "value": 557826 }
+      ],
+      "growthRate": 3.0
+    },
+    {
+      "region": "Mudug",
+      "values": [
+        { "year": 2020, "value": 717823 },
+        { "year": 2021, "value": 735769 },
+        { "year": 2022, "value": 754163 },
+        { "year": 2023, "value": 773017 },
+        { "year": 2024, "value": 792342 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Nugaal",
+      "values": [
+        { "year": 2020, "value": 392456 },
+        { "year": 2021, "value": 402268 },
+        { "year": 2022, "value": 412324 },
+        { "year": 2023, "value": 422632 },
+        { "year": 2024, "value": 433198 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Sanaag",
+      "values": [
+        { "year": 2020, "value": 544321 },
+        { "year": 2021, "value": 557929 },
+        { "year": 2022, "value": 571878 },
+        { "year": 2023, "value": 586175 },
+        { "year": 2024, "value": 600829 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Shabeellaha Dhexe",
+      "values": [
+        { "year": 2020, "value": 623851 },
+        { "year": 2021, "value": 642567 },
+        { "year": 2022, "value": 661844 },
+        { "year": 2023, "value": 681699 },
+        { "year": 2024, "value": 702150 }
+      ],
+      "growthRate": 3.0
+    },
+    {
+      "region": "Shabeellaha Hoose",
+      "values": [
+        { "year": 2020, "value": 912345 },
+        { "year": 2021, "value": 939715 },
+        { "year": 2022, "value": 967907 },
+        { "year": 2023, "value": 996944 },
+        { "year": 2024, "value": 1026852 }
+      ],
+      "growthRate": 3.0
+    },
+    {
+      "region": "Sool",
+      "values": [
+        { "year": 2020, "value": 327654 },
+        { "year": 2021, "value": 335845 },
+        { "year": 2022, "value": 344241 },
+        { "year": 2023, "value": 352847 },
+        { "year": 2024, "value": 361668 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Togdheer",
+      "values": [
+        { "year": 2020, "value": 512387 },
+        { "year": 2021, "value": 525197 },
+        { "year": 2022, "value": 538327 },
+        { "year": 2023, "value": 551785 },
+        { "year": 2024, "value": 565580 }
+      ],
+      "growthRate": 2.5
+    },
+    {
+      "region": "Woqooyi Galbeed",
+      "values": [
+        { "year": 2020, "value": 1023456 },
+        { "year": 2021, "value": 1054160 },
+        { "year": 2022, "value": 1085784 },
+        { "year": 2023, "value": 1118358 },
+        { "year": 2024, "value": 1151909 }
+      ],
+      "growthRate": 3.0
+    }
+  ],
+  "total": {
+    "values": [
+      { "year": 2020, "value": 11163164 },
+      { "year": 2021, "value": 11460343 },
+      { "year": 2022, "value": 11766076 },
+      { "year": 2023, "value": 12080527 },
+      { "year": 2024, "value": 12404389 }
+    ],
+    "growthRate": 2.7
+  }
+}

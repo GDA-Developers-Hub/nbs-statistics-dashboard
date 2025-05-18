@@ -1,0 +1,89 @@
+{
+  "title": "Somalia Statistics Dashboard - Data Catalog",
+  "description": "Index of available statistical datasets for the Somalia Statistics Dashboard",
+  "lastUpdated": "2024-05-18",
+  "datasets": [
+    {
+      "id": "population_growth",
+      "title": "Population Growth by Region (2020-2024)",
+      "description": "Annual population figures by region showing growth trends over a 5-year period",
+      "category": "Population",
+      "file": "population_growth.json",
+      "lastUpdated": "2024-05-18",
+      "hasRegionalData": true
+    },
+    {
+      "id": "literacy_rate",
+      "title": "Literacy Rate by Region (2024)",
+      "description": "Literacy rates across Somalia's regions broken down by gender and age groups",
+      "category": "Education",
+      "file": "literacy_rate.json",
+      "lastUpdated": "2024-05-18",
+      "hasRegionalData": true
+    },
+    {
+      "id": "vaccination_coverage",
+      "title": "Vaccination Coverage by Region (2024)",
+      "description": "Percentage of children who received key vaccines across Somalia's regions",
+      "category": "Health",
+      "file": "vaccination_coverage.json",
+      "lastUpdated": "2024-05-18",
+      "hasRegionalData": true
+    },
+    {
+      "id": "cpi_trends",
+      "title": "Consumer Price Index Trends (2020-2024)",
+      "description": "Consumer Price Index data showing inflation trends over the past five years",
+      "category": "Economic",
+      "file": "cpi_trends.json",
+      "lastUpdated": "2024-05-18",
+      "hasRegionalData": false
+    }
+  ],
+  "categories": [
+    {
+      "id": "population",
+      "name": "Population",
+      "description": "Population statistics and demographics",
+      "datasets": ["population_growth"]
+    },
+    {
+      "id": "education",
+      "name": "Education",
+      "description": "Education and literacy statistics",
+      "datasets": ["literacy_rate"]
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "description": "Health indicators including vaccination and disease prevalence",
+      "datasets": ["vaccination_coverage"]
+    },
+    {
+      "id": "economic",
+      "name": "Economic",
+      "description": "Economic indicators such as inflation, prices, and growth",
+      "datasets": ["cpi_trends"]
+    }
+  ],
+  "regions": [
+    "Awdal", 
+    "Bakool", 
+    "Banaadir", 
+    "Bari", 
+    "Bay", 
+    "Galguduud", 
+    "Gedo", 
+    "Hiiraan", 
+    "Jubbada Dhexe", 
+    "Jubbada Hoose", 
+    "Mudug", 
+    "Nugaal", 
+    "Sanaag", 
+    "Shabeellaha Dhexe", 
+    "Shabeellaha Hoose", 
+    "Sool", 
+    "Togdheer", 
+    "Woqooyi Galbeed"
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "title": "Somalia Literacy Rate by Region (2024)",
+  "description": "Literacy rates across Somalia's regions broken down by gender and age groups",
+  "source": "Somalia National Bureau of Statistics",
+  "lastUpdated": "2024-05-18",
+  "data": [
+    {
+      "region": "Awdal",
+      "overall": 52.3,
+      "male": 62.5,
+      "female": 42.1,
+      "youth": 73.2
+    },
+    {
+      "region": "Bakool",
+      "overall": 38.4,
+      "male": 48.6,
+      "female": 28.2,
+      "youth": 58.3
+    },
+    {
+      "region": "Banaadir",
+      "overall": 65.8,
+      "male": 74.2,
+      "female": 57.4,
+      "youth": 82.5
+    },
+    {
+      "region": "Bari",
+      "overall": 55.7,
+      "male": 63.9,
+      "female": 47.5,
+      "youth": 74.6
+    },
+    {
+      "region": "Bay",
+      "overall": 39.2,
+      "male": 48.7,
+      "female": 29.7,
+      "youth": 59.5
+    },
+    {
+      "region": "Galguduud",
+      "overall": 42.3,
+      "male": 51.5,
+      "female": 33.1,
+      "youth": 61.8
+    },
+    {
+      "region": "Gedo",
+      "overall": 38.9,
+      "male": 47.8,
+      "female": 30.0,
+      "youth": 57.3
+    },
+    {
+      "region": "Hiiraan",
+      "overall": 41.5,
+      "male": 50.7,
+      "female": 32.3,
+      "youth": 60.2
+    },
+    {
+      "region": "Jubbada Dhexe",
+      "overall": 37.8,
+      "male": 46.5,
+      "female": 29.1,
+      "youth": 56.9
+    },
+    {
+      "region": "Jubbada Hoose",
+      "overall": 42.6,
+      "male": 51.9,
+      "female": 33.3,
+      "youth": 62.4
+    },
+    {
+      "region": "Mudug",
+      "overall": 48.4,
+      "male": 57.6,
+      "female": 39.2,
+      "youth": 67.9
+    },
+    {
+      "region": "Nugaal",
+      "overall": 46.7,
+      "male": 55.9,
+      "female": 37.5,
+      "youth": 65.8
+    },
+    {
+      "region": "Sanaag",
+      "overall": 49.3,
+      "male": 58.5,
+      "female": 40.1,
+      "youth": 68.7
+    },
+    {
+      "region": "Shabeellaha Dhexe",
+      "overall": 45.2,
+      "male": 54.4,
+      "female": 36.0,
+      "youth": 64.3
+    },
+    {
+      "region": "Shabeellaha Hoose",
+      "overall": 47.8,
+      "male": 57.0,
+      "female": 38.6,
+      "youth": 67.1
+    },
+    {
+      "region": "Sool",
+      "overall": 43.5,
+      "male": 52.7,
+      "female": 34.3,
+      "youth": 63.2
+    },
+    {
+      "region": "Togdheer",
+      "overall": 51.6,
+      "male": 60.8,
+      "female": 42.4,
+      "youth": 71.5
+    },
+    {
+      "region": "Woqooyi Galbeed",
+      "overall": 54.9,
+      "male": 64.1,
+      "female": 45.7,
+      "youth": 75.3
+    }
+  ],
+  "national": {
+    "overall": 47.3,
+    "male": 56.5,
+    "female": 38.1,
+    "youth": 66.4
+  },
+  "definitions": {
+    "overall": "Percentage of population aged 15 and above who can read and write",
+    "male": "Percentage of male population aged 15 and above who can read and write",
+    "female": "Percentage of female population aged 15 and above who can read and write",
+    "youth": "Percentage of population aged 15-24 who can read and write"
+  }
+}

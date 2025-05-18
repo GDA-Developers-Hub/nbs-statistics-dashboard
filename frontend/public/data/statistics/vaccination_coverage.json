@@ -1,0 +1,166 @@
+{
+  "title": "Somalia Vaccination Coverage by Region (2024)",
+  "description": "Percentage of children who received key vaccines across Somalia's regions",
+  "source": "Somalia National Bureau of Statistics",
+  "lastUpdated": "2024-05-18",
+  "data": [
+    {
+      "region": "Awdal",
+      "polio": 72.5,
+      "measles": 68.3,
+      "dtp3": 64.7,
+      "bcg": 75.1,
+      "overall": 70.2
+    },
+    {
+      "region": "Bakool",
+      "polio": 58.4,
+      "measles": 52.6,
+      "dtp3": 49.5,
+      "bcg": 61.3,
+      "overall": 55.5
+    },
+    {
+      "region": "Banaadir",
+      "polio": 83.7,
+      "measles": 79.5,
+      "dtp3": 76.2,
+      "bcg": 85.4,
+      "overall": 81.2
+    },
+    {
+      "region": "Bari",
+      "polio": 73.8,
+      "measles": 69.4,
+      "dtp3": 65.9,
+      "bcg": 76.2,
+      "overall": 71.3
+    },
+    {
+      "region": "Bay",
+      "polio": 59.2,
+      "measles": 54.1,
+      "dtp3": 50.8,
+      "bcg": 62.7,
+      "overall": 56.7
+    },
+    {
+      "region": "Galguduud",
+      "polio": 62.3,
+      "measles": 56.9,
+      "dtp3": 54.1,
+      "bcg": 65.8,
+      "overall": 59.8
+    },
+    {
+      "region": "Gedo",
+      "polio": 57.9,
+      "measles": 52.3,
+      "dtp3": 48.7,
+      "bcg": 60.5,
+      "overall": 54.9
+    },
+    {
+      "region": "Hiiraan",
+      "polio": 61.5,
+      "measles": 56.2,
+      "dtp3": 53.4,
+      "bcg": 64.9,
+      "overall": 59.0
+    },
+    {
+      "region": "Jubbada Dhexe",
+      "polio": 56.8,
+      "measles": 51.4,
+      "dtp3": 47.9,
+      "bcg": 59.6,
+      "overall": 53.9
+    },
+    {
+      "region": "Jubbada Hoose",
+      "polio": 62.6,
+      "measles": 57.3,
+      "dtp3": 54.2,
+      "bcg": 66.1,
+      "overall": 60.1
+    },
+    {
+      "region": "Mudug",
+      "polio": 68.4,
+      "measles": 63.7,
+      "dtp3": 60.5,
+      "bcg": 71.9,
+      "overall": 66.1
+    },
+    {
+      "region": "Nugaal",
+      "polio": 66.7,
+      "measles": 62.1,
+      "dtp3": 59.0,
+      "bcg": 70.2,
+      "overall": 64.5
+    },
+    {
+      "region": "Sanaag",
+      "polio": 69.3,
+      "measles": 64.6,
+      "dtp3": 61.4,
+      "bcg": 72.8,
+      "overall": 67.0
+    },
+    {
+      "region": "Shabeellaha Dhexe",
+      "polio": 65.2,
+      "measles": 60.6,
+      "dtp3": 57.5,
+      "bcg": 68.7,
+      "overall": 63.0
+    },
+    {
+      "region": "Shabeellaha Hoose",
+      "polio": 67.8,
+      "measles": 63.2,
+      "dtp3": 60.1,
+      "bcg": 71.3,
+      "overall": 65.6
+    },
+    {
+      "region": "Sool",
+      "polio": 63.5,
+      "measles": 58.9,
+      "dtp3": 55.7,
+      "bcg": 67.0,
+      "overall": 61.3
+    },
+    {
+      "region": "Togdheer",
+      "polio": 71.6,
+      "measles": 67.2,
+      "dtp3": 63.9,
+      "bcg": 74.5,
+      "overall": 69.3
+    },
+    {
+      "region": "Woqooyi Galbeed",
+      "polio": 74.9,
+      "measles": 70.3,
+      "dtp3": 67.1,
+      "bcg": 77.4,
+      "overall": 72.4
+    }
+  ],
+  "national": {
+    "polio": 67.3,
+    "measles": 62.8,
+    "dtp3": 59.6,
+    "bcg": 70.5,
+    "overall": 65.1
+  },
+  "definitions": {
+    "polio": "Percentage of children under 2 years who received the polio vaccine",
+    "measles": "Percentage of children under 2 years who received the measles vaccine",
+    "dtp3": "Percentage of children under 2 years who received the third dose of diphtheria-tetanus-pertussis vaccine",
+    "bcg": "Percentage of children under 2 years who received the Bacillus Calmette-Guérin (tuberculosis) vaccine",
+    "overall": "Average vaccination coverage across all four vaccines"
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "title": "Somalia Consumer Price Index Trends (2020-2024)",
+  "description": "Consumer Price Index data showing inflation trends over the past five years",
+  "source": "Somalia National Bureau of Statistics",
+  "lastUpdated": "2024-05-18",
+  "data": [
+    {
+      "month": "Jan",
+      "values": [
+        { "year": 2020, "value": 100.0 },
+        { "year": 2021, "value": 112.3 },
+        { "year": 2022, "value": 124.8 },
+        { "year": 2023, "value": 136.5 },
+        { "year": 2024, "value": 145.2 }
+      ],
+      "yearOnYearChange": 6.4
+    },
+    {
+      "month": "Feb",
+      "values": [
+        { "year": 2020, "value": 101.2 },
+        { "year": 2021, "value": 113.7 },
+        { "year": 2022, "value": 126.4 },
+        { "year": 2023, "value": 137.9 },
+        { "year": 2024, "value": 147.1 }
+      ],
+      "yearOnYearChange": 6.7
+    },
+    {
+      "month": "Mar",
+      "values": [
+        { "year": 2020, "value": 102.8 },
+        { "year": 2021, "value": 115.2 },
+        { "year": 2022, "value": 128.1 },
+        { "year": 2023, "value": 139.6 },
+        { "year": 2024, "value": 149.3 }
+      ],
+      "yearOnYearChange": 6.9
+    },
+    {
+      "month": "Apr",
+      "values": [
+        { "year": 2020, "value": 103.6 },
+        { "year": 2021, "value": 116.5 },
+        { "year": 2022, "value": 129.3 },
+        { "year": 2023, "value": 140.8 },
+        { "year": 2024, "value": 150.7 }
+      ],
+      "yearOnYearChange": 7.0
+    },
+    {
+      "month": "May",
+      "values": [
+        { "year": 2020, "value": 104.2 },
+        { "year": 2021, "value": 117.3 },
+        { "year": 2022, "value": 130.1 },
+        { "year": 2023, "value": 141.5 },
+        { "year": 2024, "value": 151.4 }
+      ],
+      "yearOnYearChange": 7.0
+    },
+    {
+      "month": "Jun",
+      "values": [
+        { "year": 2020, "value": 105.1 },
+        { "year": 2021, "value": 118.2 },
+        { "year": 2022, "value": 131.4 },
+        { "year": 2023, "value": 142.9 },
+        { "year": 2024, "value": 152.9 }
+      ],
+      "yearOnYearChange": 7.0
+    },
+    {
+      "month": "Jul",
+      "values": [
+        { "year": 2020, "value": 106.3 },
+        { "year": 2021, "value": 119.6 },
+        { "year": 2022, "value": 132.7 },
+        { "year": 2023, "value": 144.3 },
+        { "year": 2024, "value": null }
+      ],
+      "yearOnYearChange": null
+    },
+    {
+      "month": "Aug",
+      "values": [
+        { "year": 2020, "value": 107.5 },
+        { "year": 2021, "value": 120.8 },
+        { "year": 2022, "value": 133.9 },
+        { "year": 2023, "value": 145.6 },
+        { "year": 2024, "value": null }
+      ],
+      "yearOnYearChange": null
+    },
+    {
+      "month": "Sep",
+      "values": [
+        { "year": 2020, "value": 108.4 },
+        { "year": 2021, "value": 121.5 },
+        { "year": 2022, "value": 134.6 },
+        { "year": 2023, "value": 146.2 },
+        { "year": 2024, "value": null }
+      ],
+      "yearOnYearChange": null
+    },
+    {
+      "month": "Oct",
+      "values": [
+        { "year": 2020, "value": 109.2 },
+        { "year": 2021, "value": 122.3 },
+        { "year": 2022, "value": 135.1 },
+        { "year": 2023, "value": 146.8 },
+        { "year": 2024, "value": null }
+      ],
+      "yearOnYearChange": null
+    },
+    {
+      "month": "Nov",
+      "values": [
+        { "year": 2020, "value": 110.1 },
+        { "year": 2021, "value": 123.1 },
+        { "year": 2022, "value": 135.7 },
+        { "year": 2023, "value": 147.5 },
+        { "year": 2024, "value": null }
+      ],
+      "yearOnYearChange": null
+    },
+    {
+      "month": "Dec",
+      "values": [
+        { "year": 2020, "value": 111.3 },
+        { "year": 2021, "value": 124.2 },
+        { "year": 2022, "value": 136.2 },
+        { "year": 2023, "value": 148.3 },
+        { "year": 2024, "value": null }
+      ],
+      "yearOnYearChange": null
+    }
+  ],
+  "annualAverage": [
+    { "year": 2020, "value": 105.8 },
+    { "year": 2021, "value": 118.7 },
+    { "year": 2022, "value": 131.5 },
+    { "year": 2023, "value": 143.2 },
+    { "year": 2024, "value": 149.4 }
+  ],
+  "categories": [
+    {
+      "name": "Food and Non-Alcoholic Beverages",
+      "weight": 51.8,
+      "currentInflation": 8.3
+    },
+    {
+      "name": "Housing, Water, Electricity",
+      "weight": 21.3,
+      "currentInflation": 5.9
+    },
+    {
+      "name": "Transport",
+      "weight": 8.5,
+      "currentInflation": 7.2
+    },
+    {
+      "name": "Clothing and Footwear",
+      "weight": 6.2,
+      "currentInflation": 4.8
+    },
+    {
+      "name": "Furniture and Household Equipment",
+      "weight": 4.7,
+      "currentInflation": 5.3
+    },
+    {
+      "name": "Health",
+      "weight": 3.1,
+      "currentInflation": 6.5
+    },
+    {
+      "name": "Communication",
+      "weight": 2.4,
+      "currentInflation": 3.7
+    },
+    {
+      "name": "Education",
+      "weight": 1.0,
+      "currentInflation": 4.2
+    },
+    {
+      "name": "Recreation and Culture",
+      "weight": 0.6,
+      "currentInflation": 3.9
+    },
+    {
+      "name": "Miscellaneous Goods and Services",
+      "weight": 0.4,
+      "currentInflation": 4.5
+    }
+  ],
+  "baseYear": 2020,
+  "definitions": {
+    "cpi": "Consumer Price Index - measures changes in the price level of a weighted average market basket of consumer goods and services",
+    "yearOnYearChange": "Percentage change in CPI compared to the same month in the previous year",
+    "annualAverage": "Average CPI value for the entire year",
+    "weight": "Relative importance of each category in the overall CPI calculation, based on consumer spending patterns"
+  }
+}
