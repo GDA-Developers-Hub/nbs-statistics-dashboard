@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
+import { AuthProvider } from '@/contexts/AuthContext'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 // Layouts
 import DashboardLayout from '@/components/layouts/DashboardLayout'
@@ -18,21 +20,32 @@ import NotFound from '@/pages/NotFound'
 
 const App = () => {
   return (
-    <>
+    <AuthProvider>
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         
-        {/* Dashboard routes */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        {/* Dashboard routes - protected */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Overview />} />
           <Route path="population" element={<PopulationStatistics />} />
           <Route path="economic" element={<EconomicIndicators />} />
           <Route path="social" element={<SocialDevelopment />} />
           <Route path="infrastructure" element={<Infrastructure />} />
           <Route path="explorer" element={<DataExplorer />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={
+            <ProtectedRoute requiredRole="super_admin">
+              <Settings />
+            </ProtectedRoute>
+          } />
         </Route>
         
         {/* Catch all */}
@@ -40,7 +53,7 @@ const App = () => {
       </Routes>
       
       <Toaster />
-    </>
+    </AuthProvider>
   )
 }
 

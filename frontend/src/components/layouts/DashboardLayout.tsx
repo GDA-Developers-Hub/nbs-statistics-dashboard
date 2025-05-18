@@ -1,13 +1,24 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import { Menu, X, BarChart2, Users, TrendingUp, School, Building2, Database, Settings } from 'lucide-react'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { Menu, X, BarChart2, Users, TrendingUp, School, Building2, Database, Settings, LogOut, User } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import GlobalFilters from '@/components/filters/GlobalFilters'
+import { useAuth } from '@/contexts/AuthContext'
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 const Sidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) => {
   const location = useLocation()
+  const { user } = useAuth()
   
+  // Base menu items available to all users
   const menuItems = [
     { icon: BarChart2, label: 'Overview', path: '/dashboard' },
     { icon: Users, label: 'Population', path: '/dashboard/population' },
@@ -15,8 +26,13 @@ const Sidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) =>
     { icon: School, label: 'Social', path: '/dashboard/social' },
     { icon: Building2, label: 'Infrastructure', path: '/dashboard/infrastructure' },
     { icon: Database, label: 'Data Explorer', path: '/dashboard/explorer' },
-    { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
   ]
+  
+  // Add settings only for admin users
+  const isAdmin = user?.role === 'super_admin' || user?.role === 'admin'
+  if (isAdmin) {
+    menuItems.push({ icon: Settings, label: 'Settings', path: '/dashboard/settings' })
+  }
 
   return (
     <div
@@ -32,6 +48,7 @@ const Sidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) =>
         <button
           onClick={() => setOpen(false)}
           className="p-2 text-gray-500 md:hidden"
+          aria-label="Close sidebar"
         >
           <X size={20} />
         </button>
@@ -39,7 +56,10 @@ const Sidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) =>
       <nav className="mt-8 px-4">
         <ul className="space-y-2">
           {menuItems.map((item) => {
-            const isActive = location.pathname === item.path
+            const isActive = 
+              item.path === '/dashboard' 
+                ? location.pathname === item.path
+                : location.pathname.startsWith(item.path);
             const Icon = item.icon
             
             return (
@@ -65,8 +85,48 @@ const Sidebar = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) =>
   )
 }
 
+const UserMenu = () => {
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="flex items-center rounded-full border p-1 hover:bg-gray-100 focus:outline-none">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          <span className="text-sm font-medium">
+            {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
+          </span>
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>
+          <div>
+            <p className="font-medium">{user?.full_name || user?.email}</p>
+            <p className="text-xs text-gray-500">{user?.role}</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/profile')}>
+          <User className="mr-2 h-4 w-4" />
+          Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { user } = useAuth()
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -77,6 +137,7 @@ const DashboardLayout = () => {
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 text-gray-600 md:hidden"
+            aria-label="Open sidebar"
           >
             <Menu size={20} />
           </button>
@@ -84,10 +145,7 @@ const DashboardLayout = () => {
           <h1 className="text-xl font-semibold md:hidden">Dashboard</h1>
           
           <div className="flex items-center">
-            {/* User profile placeholder */}
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
-              <span className="text-sm font-medium">U</span>
-            </div>
+            <UserMenu />
           </div>
         </header>
         

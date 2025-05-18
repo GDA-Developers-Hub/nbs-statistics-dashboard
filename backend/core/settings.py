@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.gis',
+    # 'django.contrib.gis',  # Commented out for local development
     
     # Third-party apps
     'rest_framework',
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_yasg',
-    'leaflet',
+    # 'leaflet',  # Commented out for local development
 ]
 
 MIDDLEWARE = [
@@ -75,12 +75,8 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ.get('DATABASE_NAME', 'snbs_dashboard'),
-        'USER': os.environ.get('DATABASE_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('DATABASE_HOST', 'db'),
-        'PORT': os.environ.get('DATABASE_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -157,8 +153,28 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS', 
-    'http://localhost:3000,http://localhost:5173'
+    'http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:3000'
 ).split(',')
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Celery settings
 CELERY_BROKER_URL = f"amqp://{os.environ.get('RABBITMQ_USER', 'guest')}:" \
@@ -180,13 +196,13 @@ CELERY_TASK_REJECT_ON_WORKER_LOST = True
 SNBS_BASE_URL = os.environ.get('SNBS_BASE_URL', 'https://nbs.gov.so/')
 SCRAPER_SCHEDULE_INTERVAL = int(os.environ.get('SCRAPER_SCHEDULE_INTERVAL', '1440'))  # minutes
 
-# GIS settings
-LEAFLET_CONFIG = {
-    'DEFAULT_CENTER': (5.152149, 46.199616),  # Somalia center coordinates
-    'DEFAULT_ZOOM': 6,
-    'MIN_ZOOM': 3,
-    'MAX_ZOOM': 18,
-}
+# GIS settings disabled for local development
+# LEAFLET_CONFIG = {
+#     'DEFAULT_CENTER': (5.152149, 46.199616),  # Somalia center coordinates
+#     'DEFAULT_ZOOM': 6,
+#     'MIN_ZOOM': 3,
+#     'MAX_ZOOM': 18,
+# }
 
 # API version
 API_VERSION = os.environ.get('API_VERSION', 'v1')

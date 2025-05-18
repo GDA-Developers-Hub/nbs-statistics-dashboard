@@ -1,15 +1,64 @@
+import logging
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, permissions, status, generics
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (
     UserSerializer, UserDetailSerializer, UserCreateSerializer, 
     UserProfileSerializer, PasswordChangeSerializer,
-    UserRegionAccessSerializer, UserSectorAccessSerializer
+    UserRegionAccessSerializer, UserSectorAccessSerializer,
+    CustomTokenObtainPairSerializer
 )
 from .models import UserRegionAccess, UserSectorAccess
 
 User = get_user_model()
+logger = logging.getLogger('auth_service')
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """
+    Custom JWT token view that uses our custom serializer
+    """
+    serializer_class = CustomTokenObtainPairSerializer
+    
+    def post(self, request, *args, **kwargs):
+        # Get client IP address
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+            
+        try:
+            response = super().post(request, *args, **kwargs)
+            # If we reach here, authentication was successful
+            email = request.data.get('email', 'unknown')
+            logger.info(f"Successful login for user '{email}' from IP {ip}")
+            return response
+        except Exception as e:
+            # Authentication failed
+            email = request.data.get('email', 'unknown')
+            logger.warning(f"Failed login attempt for user '{email}' from IP {ip}: {str(e)}")
+            raise
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def logout_view(request):
+    """
+    Endpoint to log user logout events.
+    The actual token invalidation is handled by the frontend by removing the tokens.
+    """
+    # Get client IP address
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    
+    user_email = request.user.email
+    logger.info(f"User '{user_email}' logged out from IP {ip}")
+    
+    return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
 
 class IsAdminOrSuperAdmin(permissions.BasePermission):
     """
