@@ -1,0 +1,9 @@
+WARNING 2025-05-18 17:47:36,978 views Failed login attempt for user 'admin@gmail.com' from IP 127.0.0.1: Module "auth_service.permissions.backends" does not define a "RoleBasedPermissionBackend" attribute/class
+WARNING 2025-05-18 17:49:36,172 views Failed login attempt for user 'admin@gmail.com' from IP 127.0.0.1: Module "auth_service.permissions.backends" does not define a "RoleBasedPermissionBackend" attribute/class
+WARNING 2025-05-18 18:08:42,833 views Failed login attempt for user 'admin@gmail.com' from IP 127.0.0.1: Module "auth_service.permissions.backends" does not define a "RoleBasedPermissionBackend" attribute/class
+INFO 2025-05-18 18:24:19,991 views Successful login for user 'admin@gmail.com' from IP 127.0.0.1
+INFO 2025-05-18 18:28:45,415 views Successful login for user 'admin@gmail.com' from IP 127.0.0.1
+INFO 2025-05-18 18:45:45,875 urls Token refresh successful from IP 127.0.0.1
+INFO 2025-05-18 18:45:45,879 urls Token refresh successful from IP 127.0.0.1
+INFO 2025-05-18 19:57:46,850 urls Token refresh successful from IP 127.0.0.1
+INFO 2025-05-18 19:57:47,153 urls Token refresh successful from IP 127.0.0.1

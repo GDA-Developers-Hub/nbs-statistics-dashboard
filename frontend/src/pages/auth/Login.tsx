@@ -3,9 +3,11 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from '@/components/ui/use-toast'
+import { useAuth } from '@/contexts/AuthContext'
 
 const Login = () => {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -22,31 +24,12 @@ const Login = () => {
     setIsLoading(true)
 
     try {
-      // In a real app, this would make an API call to authenticate
-      // For now, we'll just simulate a login with different roles
-      
-      // Admin roles based on project requirements
-      const roleMap: Record<string, string> = {
-        'admin@snbs.gov.so': 'Super Admin',
-        'editor@snbs.gov.so': 'Admin',
-        'analyst@snbs.gov.so': 'Analyst',
-        'user@snbs.gov.so': 'Regular User',
-        'guest@snbs.gov.so': 'Public User',
-      }
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const userRole = roleMap[formData.email] || 'Public User'
-      
-      // Store auth details in local storage (would use secure cookies in production)
-      localStorage.setItem('isAuthenticated', 'true')
-      localStorage.setItem('userRole', userRole)
-      localStorage.setItem('userEmail', formData.email)
+      // Use the login function from AuthContext
+      await login(formData.email, formData.password)
       
       toast({
         title: 'Login Successful',
-        description: `Welcome back! You're logged in as ${userRole}.`,
+        description: `Welcome back! You're logged in.`,
       })
       
       navigate('/dashboard')
@@ -90,7 +73,7 @@ const Login = () => {
                 onChange={handleChange}
               />
               <p className="text-xs text-gray-500">
-                Try: admin@snbs.gov.so, analyst@snbs.gov.so, or user@snbs.gov.so
+                Default admin: admin@gmail.com
               </p>
             </div>
             <div className="space-y-2">
@@ -119,7 +102,7 @@ const Login = () => {
                 onChange={handleChange}
               />
               <p className="text-xs text-gray-500">
-                Any password will work for the demo
+                Default admin password: Admin@1234
               </p>
             </div>
           </CardContent>
